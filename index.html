@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina AI - Crea Ads que convierten</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #FFFFFF; }
+        
+        /* --- ESTILOS DE TRANSICIÓN Y UI --- */
+        .fade-enter { animation: fadeEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .fade-exit { animation: fadeExit 0.4s ease-in forwards; }
+        @keyframes fadeExit { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
+
+        /* Grid animado del Home (Estilo Arcads) */
+        .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
+        .marquee-content { display: inline-flex; animation: scroll 40s linear infinite; }
+        .marquee-content:hover { animation-play-state: paused; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Estilos App (v2) */
+        .avatar-select.active { ring: 2px solid #000; ring-offset: 2px; transform: scale(0.96); }
+        .loader-ring { display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-right-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        /* Utilidades */
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="text-slate-900 h-screen flex flex-col overflow-hidden">
+
+    <!-- ================= 1. NAVBAR GLOBAL ================= -->
+    <nav class="glass-nav w-full h-16 flex items-center justify-between px-6 z-50 fixed top-0 left-0 transition-all duration-300" id="navbar">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 cursor-pointer" onclick="goHome()">
+            <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold shadow-md">L</div>
+            <span class="font-bold text-lg tracking-tight">Lumina</span>
+        </div>
+        
+        <!-- Nav Links (Solo visibles en Home) -->
+        <div id="nav-links" class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
+            <a href="#" class="hover:text-black transition-colors">Casos de Éxito</a>
+            <a href="#" class="hover:text-black transition-colors">Precios</a>
+            <a href="#" class="hover:text-black transition-colors">Para Agencias</a>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex items-center gap-3">
+            <button class="text-sm font-medium text-slate-600 hover:text-black px-3">Login</button>
+            <button onclick="enterApp()" class="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg shadow-slate-200">
+                Crear Video Gratis
+            </button>
+        </div>
+    </nav>
+
+    <!-- ================= 2. LANDING PAGE (PRESENTACIÓN) ================= -->
+    <section id="landing-page" class="flex-1 pt-20 overflow-y-auto bg-white relative">
+        
+        <!-- Hero Section -->
+        <div class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center fade-enter">
+            <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 mb-8">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Nuevo: Veo2 Integration</span>
+            </div>
+            
+            <h1 class="text-6xl md:text-7xl font-bold text-slate-900 mb-6 tracking-tight leading-[1.1]">
+                Convierte texto en <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600">actores reales.</span>
+            </h1>
+            
+            <p class="text-xl text-slate-500 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                Deja de contratar actores y estudios. Genera anuncios UGC (User Generated Content) virales en segundos usando nuestra IA de última generación.
+            </p>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="enterApp()" class="group bg-black text-white px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
+                    <span>Comenzar a Crear</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                <button class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-50 transition-colors flex items-center gap-3">
+                    <i class="fa-solid fa-play"></i> Ver Demo
+                </button>
+            </div>
+        </div>
+
+        <!-- Visual Grid (Arcads Style) - Marquee infinito -->
+        <div class="w-full py-12 overflow-hidden bg-slate-50/50 border-y border-slate-100">
+            <div class="marquee-container">
+                <div class="marquee-content gap-6 px-6">
+                    <!-- Generamos cartas repetidas para el efecto infinito -->
+                    <!-- Card 1 -->
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Campaña Moda</p>
+                            <p class="text-white/70 text-xs">Generado en 12s</p>
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-play text-white"></i>
+                        </div>
+                    </div>
+                     <!-- Card 2 -->
+                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Review Tech</p>
+                            <p class="text-white/70 text-xs">Voz: ElevenLabs</p>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Testimonio App</p>
+                            <p class="text-white/70 text-xs">Avatar: Pro</p>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">E-learning</p>
+                            <p class="text-white/70 text-xs">Lip-Sync: Perfecto</p>
+                        </div>
+                    </div>
+                    <!-- Repetimos para efecto scroll (simplificado) -->
+                    <div class="w-64 aspect-[9/16] bg-slate-200 rounded-2xl flex items-center justify-center">
+                        <span class="text-slate-400 font-medium">Ver más...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Proof -->
+        <div class="py-12 text-center">
+            <p class="text-sm text-slate-400 font-medium uppercase tracking-widest mb-6">Utilizado por los mejores growth hackers</p>
+            <div class="flex justify-center items-center gap-12 opacity-40 grayscale">
+                <i class="fa-brands fa-spotify text-3xl"></i>
+                <i class="fa-brands fa-amazon text-3xl"></i>
+                <i class="fa-brands fa-stripe text-3xl"></i>
+                <i class="fa-brands fa-airbnb text-3xl"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 3. APP STUDIO (OCULTO INICIALMENTE) ================= -->
+    <section id="app-studio" class="hidden flex-1 pt-16 overflow-hidden bg-slate-50 relative animate-fade-enter">
+        
+        <!-- Left Sidebar: Assets -->
+        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] absolute top-16 bottom-0 left-0">
+            <!-- Tabs -->
+            <div class="flex p-3 border-b border-slate-100 gap-2">
+                <button onclick="setTab('library')" id="tab-lib" class="flex-1 bg-slate-100 text-black text-xs font-semibold py-2 rounded-lg transition-colors">Biblioteca</button>
+                <button onclick="setTab('ai')" id="tab-ai" class="flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"><i class="fa-solid fa-wand-magic-sparkles"></i> Generar IA</button>
+            </div>
+
+            <!-- Library Content -->
+            <div id="view-library" class="flex-1 p-4 overflow-y-auto">
+                <div class="grid grid-cols-2 gap-3" id="avatar-grid">
+                    <!-- Avatar items injected by JS -->
+                </div>
+            </div>
+
+            <!-- AI Content (Nanobanana) -->
+            <div id="view-ai" class="hidden flex-1 p-4">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-4">
+                    <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Prompt Creativo</label>
+                    <textarea id="ai-prompt" class="w-full h-24 bg-white mt-2 p-3 rounded-lg border border-indigo-100 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="Describe tu avatar ideal..."></textarea>
+                    <button onclick="simulateAIGen()" id="btn-ai-gen" class="w-full mt-3 bg-indigo-600 text-white py-2 rounded-lg text-xs font-medium hover:bg-indigo-700 transition-colors">
+                        Generar Imagen
+                    </button>
+                </div>
+                <div id="ai-result-area" class="grid grid-cols-2 gap-2"></div>
+            </div>
+        </aside>
+
+        <!-- Center: Canvas -->
+        <main class="absolute top-16 bottom-0 left-80 right-96 bg-[#F4F4F5] flex flex-col">
+            <!-- Toolbar -->
+            <div class="h-12 border-b border-slate-200 bg-white/50 backdrop-blur flex items-center justify-between px-4">
+                <div class="flex gap-2">
+                    <span class="text-[10px] font-mono text-slate-400">CANVAS: 1080x1920</span>
+                </div>
+                <div class="flex gap-2">
+                    <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-200 text-slate-500"><i class="fa-solid fa-undo text-xs"></i></button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-200 text-slate-500"><i class="fa-solid fa-redo text-xs"></i></button>
+                </div>
+            </div>
+
+            <!-- Viewport -->
+            <div class="flex-1 flex items-center justify-center p-8 overflow-hidden">
+                <div class="relative w-[340px] h-[600px] bg-black rounded-[2.5rem] shadow-2xl ring-4 ring-slate-300 overflow-hidden transition-all duration-500" id="phone-frame">
+                    <!-- Image Preview -->
+                    <img id="main-preview" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover">
+                    
+                    <!-- Video Element (Hidden initially) -->
+                    <video id="result-video" class="w-full h-full object-cover hidden" playsinline loop></video>
+
+                    <!-- Overlay: Processing State -->
+                    <div id="processing-overlay" class="absolute inset-0 bg-black/90 hidden flex-col items-center justify-center text-white z-50">
+                        <div class="w-12 h-12 border-2 border-slate-700 border-t-white rounded-full animate-spin mb-4"></div>
+                        <p class="text-sm font-medium animate-pulse" id="process-text">Iniciando...</p>
+                        <p class="text-xs text-slate-500 mt-1 font-mono" id="process-detail">Connecting to API...</p>
+                    </div>
+
+                    <!-- Overlay: Play Button -->
+                    <div id="play-btn-overlay" class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 cursor-pointer hidden z-40" onclick="togglePlay()">
+                        <div class="w-14 h-14 bg-white/30 backdrop-blur rounded-full flex items-center justify-center border border-white/60 transition-transform hover:scale-110">
+                            <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: Controls -->
+        <aside class="w-96 bg-white border-l border-slate-200 flex flex-col z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.02)] absolute top-16 bottom-0 right-0">
+            <div class="flex-1 p-6 overflow-y-auto">
+                <!-- Script Input -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-slate-900">GUION</label>
+                        <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded">GPT-4o Ready</span>
+                    </div>
+                    <textarea id="script-input" class="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-black/5 outline-none resize-none transition-all" placeholder="Hola, escribe aquí lo que quieres que diga tu avatar..."></textarea>
+                </div>
+
+                <!-- Voice Selector -->
+                <div class="mb-8">
+                    <label class="text-xs font-bold text-slate-900 block mb-2">VOZ (ELEVENLABS)</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 border border-black bg-slate-50 rounded-xl cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-indigo-600 text-xs border border-indigo-50">
+                                    <i class="fa-solid fa-wave-square"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold">Rachel (Narrativa)</div>
+                                    <div class="text-[10px] text-slate-500">Inglés, US, Calmada</div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-circle-check text-black"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="p-6 border-t border-slate-100 bg-white">
+                <button onclick="generateFinalVideo()" id="btn-generate" class="w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2">
+                    <span>Generar Video (2 Créditos)</span>
+                    <i class="fa-solid fa-bolt text-yellow-300"></i>
+                </button>
+            </div>
+        </aside>
+    </section>
+
+    <script>
+        // --- MOCK DATA ---
+        const avatars = [
+            { id: 1, img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop", name: "Sofia" },
+            { id: 2, img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop", name: "Maya" },
+            { id: 3, img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop", name: "Leo" },
+            { id: 4, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop", name: "Elena" }
+        ];
+
+        // --- NAVIGATION LOGIC ---
+        function enterApp() {
+            // Animación de salida Landing
+            const landing = document.getElementById('landing-page');
+            const navbarLinks = document.getElementById('nav-links');
+            
+            landing.classList.add('fade-exit');
+            navbarLinks.style.opacity = '0';
+            
+            setTimeout(() => {
+                landing.style.display = 'none';
+                navbarLinks.style.display = 'none';
+                
+                // Animación de entrada App
+                const app = document.getElementById('app-studio');
+                app.classList.remove('hidden');
+                app.classList.add('fade-enter'); // CSS animation class
+                
+                // Inicializar Grid de App
+                initAppGrid();
+            }, 400);
+        }
+
+        function goHome() {
+            // Simplemente recargar por simplicidad en prototipo, o revertir clases
+            location.reload();
+        }
+
+        // --- APP STUDIO LOGIC ---
+        function initAppGrid() {
+            const grid = document.getElementById('avatar-grid');
+            grid.innerHTML = ''; // Clear
+            avatars.forEach((av, idx) => {
+                const el = document.createElement('div');
+                el.className = `avatar-select relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group transition-all hover:shadow-md ${idx === 0 ? 'active' : ''}`;
+                el.onclick = () => selectAvatar(av.img, el);
+                el.innerHTML = `
+                    <img src="${av.img}" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-white text-[10px] font-medium">${av.name}</span>
+                    </div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        function selectAvatar(src, el) {
+            // UI Update
+            document.querySelectorAll('.avatar-select').forEach(d => d.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            // Preview Update
+            const preview = document.getElementById('main-preview');
+            preview.style.opacity = 0;
+            setTimeout(() => {
+                preview.src = src;
+                preview.style.opacity = 1;
+                // Reset video state
+                document.getElementById('result-video').classList.add('hidden');
+                document.getElementById('result-video').pause();
+                document.getElementById('main-preview').classList.remove('hidden');
+                document.getElementById('play-btn-overlay').classList.add('hidden');
+            }, 200);
+        }
+
+        function setTab(tab) {
+            const libView = document.getElementById('view-library');
+            const aiView = document.getElementById('view-ai');
+            const btnLib = document.getElementById('tab-lib');
+            const btnAi = document.getElementById('tab-ai');
+
+            if(tab === 'library') {
+                libView.classList.remove('hidden');
+                aiView.classList.add('hidden');
+                btnLib.className = "flex-1 bg-slate-100 text-black text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm";
+                btnAi.className = "flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-1";
+            } else {
+                libView.classList.add('hidden');
+                aiView.classList.remove('hidden');
+                btnAi.className = "flex-1 bg-indigo-50 text-indigo-600 text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1";
+                btnLib.className = "flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors";
+            }
+        }
+
+        // --- SIMULATION LOGIC (API HOOKS) ---
+
+        function simulateAIGen() {
+            const btn = document.getElementById('btn-ai-gen');
+            const prompt = document.getElementById('ai-prompt').value;
+            if(!prompt) return alert("Escribe un prompt primero.");
+
+            // Loading state
+            const originalText = btn.innerText;
+            btn.innerHTML = `<span class="loader-ring"></span> Generando...`;
+            btn.disabled = true;
+
+            // TODO: Llamada a Nanobanana API aquí
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                // Mock Result
+                const mockImg = "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=500&auto=format&fit=crop";
+                const resArea = document.getElementById('ai-result-area');
+                resArea.innerHTML = `
+                    <div onclick="selectAvatar('${mockImg}', this)" class="avatar-select active rounded-lg overflow-hidden aspect-square cursor-pointer ring-2 ring-indigo-500 relative">
+                        <img src="${mockImg}" class="w-full h-full object-cover">
+                        <div class="absolute top-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white"></div>
+                    </div>
+                `;
+                selectAvatar(mockImg, null); // Auto select
+            }, 2000);
+        }
+
+        function generateFinalVideo() {
+            const script = document.getElementById('script-input').value;
+            if(!script) return alert("Escribe un guion primero.");
+
+            const overlay = document.getElementById('processing-overlay');
+            const txtMain = document.getElementById('process-text');
+            const txtDet = document.getElementById('process-detail');
+            const btn = document.getElementById('btn-generate');
+
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            btn.disabled = true;
+
+            // Secuencia de simulación (Veo2 / Sora)
+            const steps = [
+                { t: 1000, m: "Sintetizando Voz...", d: "ElevenLabs Turbo v2.5" },
+                { t: 3000, m: "Animando Rostro...", d: "Mesh deformation engine" },
+                { t: 5500, m: "Renderizando Video...", d: "Raytracing lights & shadows" },
+                { t: 7000, m: "Finalizando...", d: "Compressing MP4" }
+            ];
+
+            let i = 0;
+            function nextStep() {
+                if(i >= steps.length) {
+                    finishVideo();
+                    return;
+                }
+                txtMain.innerText = steps[i].m;
+                txtDet.innerText = steps[i].d;
+                setTimeout(() => {
+                    i++;
+                    nextStep();
+                }, steps[i].t - (steps[i-1]?.t || 0));
+            }
+            nextStep();
+        }
+
+        function finishVideo() {
+            document.getElementById('processing-overlay').classList.remove('flex');
+            document.getElementById('processing-overlay').classList.add('hidden');
+            document.getElementById('btn-generate').disabled = false;
+
+            const vid = document.getElementById('result-video');
+            const img = document.getElementById('main-preview');
+            const playBtn = document.getElementById('play-btn-overlay');
+
+            img.classList.add('hidden');
+            vid.classList.remove('hidden');
+            playBtn.classList.remove('hidden');
+
+            // Mock video url
+            vid.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
+            vid.muted = true;
+            vid.play();
+        }
+
+        function togglePlay() {
+            const vid = document.getElementById('result-video');
+            const btn = document.getElementById('play-btn-overlay');
+            if(vid.paused) {
+                vid.play();
+                btn.style.opacity = 0;
+            } else {
+                vid.pause();
+                btn.style.opacity = 1;
+            }
+        }
+    </script>
+</body>
+</html>
