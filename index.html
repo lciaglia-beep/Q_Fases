@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina AI - Ads UGC con D3.js</title>
+    <title>Lumina AI - Ads UGC con D3.js (Demo)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -40,10 +40,7 @@
             padding: 1.5rem;
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
         }
-        .line {
-            fill: none;
-            stroke-width: 3px;
-        }
+        .line { fill: none; stroke-width: 3px; }
         .roas-line { stroke: #10B981; } /* Color verde para ROAS */
         .ctr-line { stroke: #3B82F6; } /* Color azul para CTR */
         .axis text { font-size: 10px; fill: #6B7280; }
@@ -123,7 +120,7 @@
             </div>
         </div>
 
-        <!-- Carrusel de Videos de Influencers (Actualizado con mejores imágenes) -->
+        <!-- Carrusel de Videos de Influencers -->
         <div class="w-full py-12 overflow-hidden bg-slate-50/50 border-y border-slate-100">
             <div class="marquee-container">
                 <div class="marquee-content gap-6 px-6">
@@ -145,7 +142,7 @@
                     </div>
                     <!-- Video 3: Fitness -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1579758774780-f09689456569?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwZml0bmVzcyUyMHN1cHBsZW1lbnRzfGVufDB8fHx8MTcxNzQxODcyM3ww&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/10B981/FFFFFF?text=Influencer+Fitness'" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1579758774780-f09689456569?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHxpbmZsdWVuY2VyJTIwZml0bmVzcyUyMHN1cHBsZW1lbnRzfGVufDB8fHx8MTcxNzQxODcyM3ww&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/10B981/FFFFFF?text=Influencer+Fitness'" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                             <p class="text-white font-medium text-sm">Mi Rutina + Proteína</p>
                             <p class="text-white/70 text-xs">Generado en 15s. Máximo CTR</p>
@@ -153,7 +150,7 @@
                     </div>
                     <!-- Video 4: Finanzas -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1558239062-817349195971?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwcHJvZHVjdCUyMHJldmlld3xlbnwwfHx8fDE3MTc0MTg1NTh8MA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/F59E0B/FFFFFF?text=Influencer+Finanzas'" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1558239062-817349195971?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHxpbmZsdWVuY2VyJTIwcHJvZHVjdCUyMHJldmlld3xlbnwwfHx8fDE3MTc0MTg1NTh8MA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/F59E0B/FFFFFF?text=Influencer+Finanzas'" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                             <p class="text-white font-medium text-sm">Plataforma de Trading</p>
                             <p class="text-white/70 text-xs">Lip-Sync: Perfecto, Voz: Española</p>
@@ -373,7 +370,7 @@
         </aside>
     </section>
 
-    <!-- Modal de Autenticación -->
+    <!-- Modal de Autenticación (Reutilizado para mensajes/login) -->
     <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center transition-opacity duration-300">
         <div class="bg-white p-8 rounded-xl w-full max-w-md shadow-2xl scale-95 transition-transform duration-300" id="auth-box">
             <div class="flex justify-between items-center mb-6">
@@ -381,18 +378,18 @@
                 <button onclick="hideAuthModal()" class="text-slate-400 hover:text-black transition-colors"><i class="fa-solid fa-times"></i></button>
             </div>
             
-            <input type="email" id="auth-email" class="w-full p-3 mb-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Email">
-            <input type="password" id="auth-password" class="w-full p-3 mb-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Contraseña">
+            <input type="email" id="auth-email" class="w-full p-3 mb-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Email (Ignorado en modo Demo)">
+            <input type="password" id="auth-password" class="w-full p-3 mb-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Contraseña (Ignorado en modo Demo)">
             
             <p id="auth-error" class="text-red-500 text-xs mb-3 hidden"></p>
 
             <button onclick="handleEmailAuth()" id="btn-email-auth" class="w-full bg-black text-white py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
-                Iniciar Sesión
+                Iniciar Sesión (Modo Demo)
             </button>
             
             <p class="text-center mt-4 text-sm">
                 <a href="#" onclick="toggleAuthMode(event)" id="toggle-auth-link" class="text-slate-500 hover:underline">
-                    ¿No tienes cuenta? Regístrate
+                    ¿No tienes cuenta? Regístrate (Modo Demo)
                 </a>
             </p>
         </div>
@@ -404,22 +401,25 @@
         import { 
             getAuth, 
             signInAnonymously, 
-            signInWithCustomToken, 
-            onAuthStateChanged,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut
+            onAuthStateChanged
+            // Se han eliminado las funciones de autenticación por email para esta versión demo
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
-        // --- FIREBASE SETUP ---
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // --- FIREBASE SETUP (VERSION SEGURA PARA GITHUB) ---
+        // Usamos una configuración ficticia para que la inicialización de Firebase no falle
+        // al no encontrar las variables globales de Canvas.
+        const firebaseConfig = { 
+            apiKey: "MOCK_API_KEY", 
+            authDomain: "mock.firebaseapp.com", 
+            projectId: "mock-project-id" 
+        };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         
         // --- GLOBAL STATE ---
         let authReady = false;
         let currentUser = null;
-        let authMode = 'login'; // 'login' or 'signup'
+        let authMode = 'login'; 
         let currentTab = 'library';
 
         // --- MOCK DATA ---
@@ -430,25 +430,15 @@
             { id: 4, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop", name: "Elena", selected: false }
         ];
 
-        // --- AUTHENTICATION FLOW ---
-
+        // --- AUTHENTICATION FLOW (SIMPLIFICADO) ---
         async function initializeAuth() {
             try {
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    await signInWithCustomToken(auth, token);
-                } else {
-                    if (!auth.currentUser) {
-                        await signInAnonymously(auth);
-                    }
+                // Forzamos el inicio de sesión anónimo en GitHub Pages
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
                 }
             } catch (error) {
-                console.error("Error during initial sign-in:", error);
-                try {
-                    if (!auth.currentUser) await signInAnonymously(auth);
-                } catch (e) {
-                    console.error("Error signing in anonymously:", e);
-                }
+                console.error("Error during initial sign-in (Demo Mode):", error);
             }
         }
         
@@ -459,23 +449,16 @@
             const authBtn = document.getElementById('auth-button');
             const userDisplay = document.getElementById('user-display');
             
-            if (user && user.email) {
-                const email = user.email;
-                authBtn.innerHTML = `<i class="fa-solid fa-user-circle mr-1"></i> ${email.split('@')[0]}`;
-                authBtn.onclick = () => showLogoutOptions();
-                
-                userDisplay.innerHTML = `Usuario: <span class="text-black">${user.uid.substring(0, 8)}...</span>`;
-
-            } else {
-                authBtn.innerHTML = `Login / Registro`;
-                authBtn.onclick = showAuthModal;
-                userDisplay.innerHTML = '';
-            }
-
-            console.log("Auth state changed. User:", user ? (user.email || 'Anonymous') : "None");
+            // Mostrar siempre el usuario anónimo o un mensaje de Demo
+            const displayId = user ? user.uid.substring(0, 8) : 'DEMO';
+            authBtn.innerHTML = `<i class="fa-solid fa-user-circle mr-1"></i> Demo ID: ${displayId}`;
+            authBtn.onclick = showAuthModal; // Mantenemos el modal para fines de demostración
+            userDisplay.innerHTML = `Usuario: <span class="text-black">${displayId}...</span>`;
+            
+            console.log("Auth state changed. User:", user ? 'Anonymous/Demo' : "None");
         });
 
-        // --- AUTH MODAL HANDLERS ---
+        // --- AUTH MODAL HANDLERS (SIMULADOS) ---
         window.showAuthModal = function() {
             document.getElementById('auth-modal').classList.add('flex');
             document.getElementById('auth-modal').classList.remove('hidden');
@@ -504,72 +487,38 @@
             document.getElementById('auth-error').classList.add('hidden');
 
             if (authMode === 'signup') {
-                title.innerText = 'Regístrate';
-                btn.innerText = 'Crear Cuenta';
-                link.innerHTML = '¿Ya tienes cuenta? Inicia Sesión';
+                title.innerText = 'Regístrate (Demo)';
+                btn.innerText = 'Crear Cuenta (Demo)';
+                link.innerHTML = '¿Ya tienes cuenta? Inicia Sesión (Modo Demo)';
             } else {
-                title.innerText = 'Inicia Sesión';
-                btn.innerText = 'Iniciar Sesión';
-                link.innerHTML = '¿No tienes cuenta? Regístrate';
+                title.innerText = 'Inicia Sesión (Demo)';
+                btn.innerText = 'Iniciar Sesión (Modo Demo)';
+                link.innerHTML = '¿No tienes cuenta? Regístrate (Modo Demo)';
             }
+            // En modo demo, solo ocultamos el modal
+            setTimeout(hideAuthModal, 500); 
         }
 
         window.handleEmailAuth = async function() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            document.getElementById('auth-error').classList.add('hidden');
-
-            if (!email || !password) {
-                return showError("Por favor, introduce email y contraseña.");
-            }
-
-            try {
-                if (authMode === 'signup') {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                }
-                hideAuthModal();
-            } catch (error) {
-                console.error(error);
-                let message = "Error de autenticación. Inténtalo de nuevo.";
-                if (error.code === 'auth/email-already-in-use') {
-                    message = "El email ya está registrado. ¿Quieres iniciar sesión?";
-                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    message = "Email o contraseña incorrectos.";
-                } else if (error.code === 'auth/weak-password') {
-                    message = "La contraseña debe tener al menos 6 caracteres.";
-                }
-                showError(message);
-            }
+            // En modo demo, solo simulamos la autenticación
+            showSimpleMessage("Demo", "La autenticación por Email/Contraseña está desactivada en esta versión de demostración. Se ha iniciado sesión de forma anónima.", "blue");
+            hideAuthModal();
         }
 
         // --- LOGOUT (Simple alert replacement) ---
         function showLogoutOptions() {
-            const modal = document.getElementById('auth-modal');
-            const box = document.getElementById('auth-box');
-            
-            box.innerHTML = `
-                <h2 class="text-xl font-bold mb-4">Opciones de Usuario</h2>
-                <p class="mb-6 text-slate-600">Sesión iniciada como: ${currentUser.email || 'Anónimo'}</p>
-                <button onclick="logoutUser()" class="w-full mb-3 py-3 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
-                    Cerrar Sesión
-                </button>
-                <button onclick="hideAuthModal()" class="w-full py-3 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
-                    Volver
-                </button>
-            `;
-            modal.classList.add('flex');
-            modal.classList.remove('hidden');
+            showSimpleMessage("Usuario Activo", `Sesión iniciada como: ${currentUser.uid.substring(0, 8)}... (Demo Anónimo)`, "blue");
         }
 
         window.logoutUser = async function() {
+            // En modo demo, simulamos cerrar y volver a iniciar anónimamente
             try {
                 await signOut(auth);
+                await signInAnonymously(auth);
                 hideAuthModal();
                 goHome();
             } catch (error) {
-                console.error("Error al cerrar sesión:", error);
+                console.error("Error al simular cerrar sesión:", error);
             }
         }
 
@@ -596,6 +545,10 @@
         }
 
         window.enterApp = function() {
+            if (!authReady) {
+                showSimpleMessage("Cargando...", "Espera un momento mientras el modo demo se inicializa.", "red");
+                return;
+            }
             const landing = document.getElementById('landing-page');
             const app = document.getElementById('app-studio');
             const navbarLinks = document.getElementById('nav-links');
@@ -604,36 +557,35 @@
             landing.classList.add('fade-exit');
             navbarLinks.style.opacity = '0';
             
-            // 2. Esperar un poco más de tiempo para que la animación se complete
+            // 2. Esperar para la transición
             setTimeout(() => {
                 try {
                     // Ocultar la landing page de forma permanente
                     landing.style.display = 'none';
-                    landing.classList.remove('fade-exit'); // Limpiar la clase de animación
+                    landing.classList.remove('fade-exit'); 
 
                     // Mostrar y animar la sección de la aplicación
                     app.classList.remove('hidden');
-                    app.classList.add('flex', 'fade-enter'); // 'flex' es crucial para el layout
+                    app.classList.add('flex', 'fade-enter'); 
                     
                     // Asegurar que se renderizan los avatares
                     renderAvatars(); 
 
                     navbarLinks.style.opacity = '1';
                 } catch (error) {
-                    // En caso de error, al menos intenta mostrar la app sin animación
-                    console.error("Error en la transición enterApp (Timeout):", error);
+                    console.error("Error en la transición enterApp:", error);
                     landing.style.display = 'none';
                     app.classList.remove('hidden');
                     app.classList.add('flex');
                 }
-            }, 400); // Aumentado a 400ms para mayor fiabilidad
+            }, 400); 
         }
 
         // --- APP STUDIO LOGIC ---
 
         function renderAvatars() {
             const grid = document.getElementById('avatar-grid');
-            if (!grid) return; // Guard clause for robustness
+            if (!grid) return; 
             grid.innerHTML = '';
             
             avatars.forEach(avatar => {
@@ -654,7 +606,6 @@
             avatars.forEach(a => a.selected = a.id === id);
             renderAvatars();
             
-            // Actualizar la vista previa principal
             const selectedAvatar = avatars.find(a => a.id === id);
             if (selectedAvatar) {
                 document.getElementById('main-preview').src = selectedAvatar.img;
@@ -877,7 +828,7 @@
             const xAxis = g => g
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x).tickSize(0))
-                .call(g => g.select(".domain").remove()); // Remover la línea del dominio
+                .call(g => g.select(".domain").remove()); 
             
             const yRoasAxis = g => g
                 .call(d3.axisLeft(yRoas).ticks(5).tickFormat(d3.format(".1f")))
@@ -941,7 +892,7 @@
                 .attr("stroke-dashoffset", totalLengthCtr)
                 .transition()
                 .duration(2000)
-                .delay(500) // Retraso para que inicie un poco después
+                .delay(500) 
                 .ease(d3.easeLinear)
                 .attr("stroke-dashoffset", 0);
 
@@ -965,9 +916,9 @@
                     .style("fill", line.color)
                     .style("stroke", "#111827")
                     .style("stroke-width", 2)
-                    .style("opacity", 0) // Inicia oculto
+                    .style("opacity", 0) 
                     .transition()
-                    .delay(2000) // Muestra después de la animación de línea
+                    .delay(2000) 
                     .duration(500)
                     .style("opacity", 1);
 
@@ -996,7 +947,7 @@
         
         // --- INITIALIZATION ---
         window.onload = function() {
-            initializeAuth(); // Iniciar Firebase Auth
+            initializeAuth(); // Iniciar Firebase Auth (Modo Demo)
             renderAvatars(); // Renderizar avatares en el estudio
             createD3Chart(); // Crear el gráfico D3
 
