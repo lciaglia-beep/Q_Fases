@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina AI - Crea Ads que convierten</title>
+    <title>Lumina AI - Crea Ads que convierten (Auth)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +13,6 @@
         /* --- ESTILOS DE TRANSICIÓN Y UI --- */
         .fade-enter { animation: fadeEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeEnter { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
         .fade-exit { animation: fadeExit 0.4s ease-in forwards; }
         @keyframes fadeExit { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
 
@@ -52,8 +51,10 @@
 
         <!-- CTA Buttons -->
         <div class="flex items-center gap-3">
-            <button class="text-sm font-medium text-slate-600 hover:text-black px-3">Login</button>
-            <button onclick="enterApp()" class="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg shadow-slate-200">
+            <button id="auth-button" onclick="showAuthModal()" class="text-sm font-medium text-slate-600 hover:text-black px-3 py-2 rounded-full transition-colors">
+                Login / Registro
+            </button>
+            <button onclick="checkAuthAndEnterApp()" class="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg shadow-slate-200">
                 Crear Video Gratis
             </button>
         </div>
@@ -61,8 +62,6 @@
 
     <!-- ================= 2. LANDING PAGE (PRESENTACIÓN) ================= -->
     <section id="landing-page" class="flex-1 pt-20 overflow-y-auto bg-white relative">
-        
-        <!-- Hero Section -->
         <div class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center fade-enter">
             <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 mb-8">
                 <span class="flex h-2 w-2 relative">
@@ -82,7 +81,7 @@
             </p>
             
             <div class="flex justify-center gap-4">
-                <button onclick="enterApp()" class="group bg-black text-white px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
+                <button onclick="checkAuthAndEnterApp()" class="group bg-black text-white px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
                     <span>Comenzar a Crear</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
@@ -97,18 +96,13 @@
             <div class="marquee-container">
                 <div class="marquee-content gap-6 px-6">
                     <!-- Generamos cartas repetidas para el efecto infinito -->
-                    <!-- Card 1 -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
                         <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                             <p class="text-white font-medium text-sm">Campaña Moda</p>
                             <p class="text-white/70 text-xs">Generado en 12s</p>
                         </div>
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur rounded-full p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fa-solid fa-play text-white"></i>
-                        </div>
                     </div>
-                     <!-- Card 2 -->
                      <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
@@ -116,7 +110,6 @@
                             <p class="text-white/70 text-xs">Voz: ElevenLabs</p>
                         </div>
                     </div>
-                    <!-- Card 3 -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
                         <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
@@ -124,7 +117,6 @@
                             <p class="text-white/70 text-xs">Avatar: Pro</p>
                         </div>
                     </div>
-                    <!-- Card 4 -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
                         <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
@@ -154,23 +146,14 @@
 
     <!-- ================= 3. APP STUDIO (OCULTO INICIALMENTE) ================= -->
     <section id="app-studio" class="hidden flex-1 pt-16 overflow-hidden bg-slate-50 relative animate-fade-enter">
-        
-        <!-- Left Sidebar: Assets -->
         <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] absolute top-16 bottom-0 left-0">
-            <!-- Tabs -->
             <div class="flex p-3 border-b border-slate-100 gap-2">
                 <button onclick="setTab('library')" id="tab-lib" class="flex-1 bg-slate-100 text-black text-xs font-semibold py-2 rounded-lg transition-colors">Biblioteca</button>
                 <button onclick="setTab('ai')" id="tab-ai" class="flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"><i class="fa-solid fa-wand-magic-sparkles"></i> Generar IA</button>
             </div>
-
-            <!-- Library Content -->
             <div id="view-library" class="flex-1 p-4 overflow-y-auto">
-                <div class="grid grid-cols-2 gap-3" id="avatar-grid">
-                    <!-- Avatar items injected by JS -->
-                </div>
+                <div class="grid grid-cols-2 gap-3" id="avatar-grid"></div>
             </div>
-
-            <!-- AI Content (Nanobanana) -->
             <div id="view-ai" class="hidden flex-1 p-4">
                 <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-4">
                     <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Prompt Creativo</label>
@@ -183,36 +166,25 @@
             </div>
         </aside>
 
-        <!-- Center: Canvas -->
         <main class="absolute top-16 bottom-0 left-80 right-96 bg-[#F4F4F5] flex flex-col">
-            <!-- Toolbar -->
             <div class="h-12 border-b border-slate-200 bg-white/50 backdrop-blur flex items-center justify-between px-4">
                 <div class="flex gap-2">
                     <span class="text-[10px] font-mono text-slate-400">CANVAS: 1080x1920</span>
                 </div>
-                <div class="flex gap-2">
-                    <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-200 text-slate-500"><i class="fa-solid fa-undo text-xs"></i></button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-200 text-slate-500"><i class="fa-solid fa-redo text-xs"></i></button>
-                </div>
+                <div id="user-display" class="text-xs text-slate-500 font-medium"></div>
             </div>
 
-            <!-- Viewport -->
             <div class="flex-1 flex items-center justify-center p-8 overflow-hidden">
                 <div class="relative w-[340px] h-[600px] bg-black rounded-[2.5rem] shadow-2xl ring-4 ring-slate-300 overflow-hidden transition-all duration-500" id="phone-frame">
-                    <!-- Image Preview -->
                     <img id="main-preview" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover">
-                    
-                    <!-- Video Element (Hidden initially) -->
                     <video id="result-video" class="w-full h-full object-cover hidden" playsinline loop></video>
 
-                    <!-- Overlay: Processing State -->
                     <div id="processing-overlay" class="absolute inset-0 bg-black/90 hidden flex-col items-center justify-center text-white z-50">
                         <div class="w-12 h-12 border-2 border-slate-700 border-t-white rounded-full animate-spin mb-4"></div>
                         <p class="text-sm font-medium animate-pulse" id="process-text">Iniciando...</p>
                         <p class="text-xs text-slate-500 mt-1 font-mono" id="process-detail">Connecting to API...</p>
                     </div>
 
-                    <!-- Overlay: Play Button -->
                     <div id="play-btn-overlay" class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 cursor-pointer hidden z-40" onclick="togglePlay()">
                         <div class="w-14 h-14 bg-white/30 backdrop-blur rounded-full flex items-center justify-center border border-white/60 transition-transform hover:scale-110">
                             <i class="fa-solid fa-play text-white text-xl ml-1"></i>
@@ -222,10 +194,8 @@
             </div>
         </main>
 
-        <!-- Right Sidebar: Controls -->
         <aside class="w-96 bg-white border-l border-slate-200 flex flex-col z-20 shadow-[-4px_0_24px_rgba(0,0,0,0.02)] absolute top-16 bottom-0 right-0">
             <div class="flex-1 p-6 overflow-y-auto">
-                <!-- Script Input -->
                 <div class="mb-8">
                     <div class="flex justify-between items-center mb-2">
                         <label class="text-xs font-bold text-slate-900">GUION</label>
@@ -233,8 +203,6 @@
                     </div>
                     <textarea id="script-input" class="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-black/5 outline-none resize-none transition-all" placeholder="Hola, escribe aquí lo que quieres que diga tu avatar..."></textarea>
                 </div>
-
-                <!-- Voice Selector -->
                 <div class="mb-8">
                     <label class="text-xs font-bold text-slate-900 block mb-2">VOZ (ELEVENLABS)</label>
                     <div class="space-y-2">
@@ -253,8 +221,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- CTA -->
             <div class="p-6 border-t border-slate-100 bg-white">
                 <button onclick="generateFinalVideo()" id="btn-generate" class="w-full bg-black text-white py-4 rounded-xl font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2">
                     <span>Generar Video (2 Créditos)</span>
@@ -264,7 +230,66 @@
         </aside>
     </section>
 
-    <script>
+    <!-- ================= 4. AUTH MODAL (LOGIN/SIGNUP) ================= -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-xl w-full max-w-md shadow-2xl scale-95 transition-transform duration-300" id="auth-box">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold" id="auth-title">Inicia Sesión</h2>
+                <button onclick="hideAuthModal()" class="text-slate-400 hover:text-black transition-colors"><i class="fa-solid fa-times"></i></button>
+            </div>
+            
+            <button onclick="signInWithGoogle()" class="w-full mb-4 py-3 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-brands fa-google text-lg"></i> Continuar con Google
+            </button>
+
+            <div class="flex items-center mb-4">
+                <hr class="flex-1 border-t border-slate-200">
+                <span class="px-3 text-xs text-slate-400">o con email</span>
+                <hr class="flex-1 border-t border-slate-200">
+            </div>
+
+            <input type="email" id="auth-email" class="w-full p-3 mb-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Email">
+            <input type="password" id="auth-password" class="w-full p-3 mb-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Contraseña">
+            
+            <p id="auth-error" class="text-red-500 text-xs mb-3 hidden"></p>
+
+            <button onclick="handleEmailAuth()" id="btn-email-auth" class="w-full bg-black text-white py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
+                Iniciar Sesión
+            </button>
+            
+            <p class="text-center mt-4 text-sm">
+                <a href="#" onclick="toggleAuthMode(event)" id="toggle-auth-link" class="text-slate-500 hover:underline">
+                    ¿No tienes cuenta? Regístrate
+                </a>
+            </p>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        
+        // --- FIREBASE SETUP ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        
+        // --- GLOBAL STATE ---
+        let authReady = false;
+        let currentUser = null;
+        let authMode = 'login'; // 'login' or 'signup'
+
         // --- MOCK DATA ---
         const avatars = [
             { id: 1, img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop", name: "Sofia" },
@@ -273,9 +298,182 @@
             { id: 4, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop", name: "Elena" }
         ];
 
+        // --- AUTHENTICATION FLOW ---
+
+        // Función de inicialización y manejo de la sesión
+        async function initializeAuth() {
+            try {
+                // 1. Intentar iniciar sesión con el token personalizado del Canvas
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    // 2. Si no hay token de Canvas, usar sesión anónima o existente.
+                    if (!auth.currentUser) {
+                        await signInAnonymously(auth);
+                    }
+                }
+            } catch (error) {
+                console.error("Error during initial sign-in:", error);
+                // Si falla el custom token, intentamos anónimo
+                try {
+                    if (!auth.currentUser) await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Error signing in anonymously:", e);
+                }
+            }
+        }
+        
+        // Observador de estado de autenticación (Se ejecuta al cargar y al cambiar el estado)
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            authReady = true;
+
+            const authBtn = document.getElementById('auth-button');
+            const userDisplay = document.getElementById('user-display');
+            
+            if (user) {
+                // Actualizar el botón de Login a Perfil/Logout
+                const email = user.email || 'Anónimo';
+                authBtn.innerHTML = `<i class="fa-solid fa-user-circle mr-1"></i> ${email.split('@')[0]}`;
+                authBtn.onclick = () => showLogoutOptions();
+                
+                userDisplay.innerHTML = `Usuario: <span class="text-black">${user.uid.substring(0, 8)}...</span>`;
+
+            } else {
+                // Volver a mostrar Login
+                authBtn.innerHTML = `Login / Registro`;
+                authBtn.onclick = showAuthModal;
+                userDisplay.innerHTML = '';
+            }
+
+            console.log("Auth state changed. User:", user ? user.uid : "None");
+        });
+
+        // --- AUTH MODAL HANDLERS ---
+        window.showAuthModal = function() {
+            document.getElementById('auth-modal').classList.add('flex');
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('auth-box').classList.remove('scale-95');
+        }
+
+        window.hideAuthModal = function() {
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-modal').classList.remove('flex');
+            document.getElementById('auth-box').classList.add('scale-95');
+            document.getElementById('auth-error').classList.add('hidden'); // Clear error
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('auth-error');
+            errorEl.innerText = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        window.toggleAuthMode = function(e) {
+            e.preventDefault();
+            authMode = authMode === 'login' ? 'signup' : 'login';
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('btn-email-auth');
+            const link = document.getElementById('toggle-auth-link');
+            document.getElementById('auth-error').classList.add('hidden');
+
+            if (authMode === 'signup') {
+                title.innerText = 'Regístrate';
+                btn.innerText = 'Crear Cuenta';
+                link.innerHTML = '¿Ya tienes cuenta? Inicia Sesión';
+            } else {
+                title.innerText = 'Inicia Sesión';
+                btn.innerText = 'Iniciar Sesión';
+                link.innerHTML = '¿No tienes cuenta? Regístrate';
+            }
+        }
+
+        window.handleEmailAuth = async function() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            document.getElementById('auth-error').classList.add('hidden');
+
+            if (!email || !password) {
+                return showError("Por favor, introduce email y contraseña.");
+            }
+
+            try {
+                if (authMode === 'signup') {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+                hideAuthModal();
+            } catch (error) {
+                console.error(error);
+                let message = "Error de autenticación. Inténtalo de nuevo.";
+                if (error.code === 'auth/email-already-in-use') {
+                    message = "El email ya está registrado. ¿Quieres iniciar sesión?";
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    message = "Email o contraseña incorrectos.";
+                } else if (error.code === 'auth/weak-password') {
+                    message = "La contraseña debe tener al menos 6 caracteres.";
+                }
+                showError(message);
+            }
+        }
+
+        window.signInWithGoogle = async function() {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                hideAuthModal();
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                showError("No se pudo iniciar sesión con Google.");
+            }
+        }
+
+        // --- LOGOUT (Simple alert replacement) ---
+        function showLogoutOptions() {
+            const modal = document.getElementById('auth-modal');
+            const box = document.getElementById('auth-box');
+            
+            // Reemplazo temporal del contenido del modal para Logout
+            box.innerHTML = `
+                <h2 class="text-xl font-bold mb-4">Opciones de Usuario</h2>
+                <p class="mb-6 text-slate-600">Sesión iniciada como: ${currentUser.email || 'Anónimo'}</p>
+                <button onclick="logoutUser()" class="w-full mb-3 py-3 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+                    Cerrar Sesión
+                </button>
+                <button onclick="hideAuthModal()" class="w-full py-3 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
+                    Volver
+                </button>
+            `;
+            // Asegurar que se muestre el modal
+            modal.classList.add('flex');
+            modal.classList.remove('hidden');
+        }
+
+        window.logoutUser = async function() {
+            try {
+                await signOut(auth);
+                hideAuthModal();
+                // Opcional: Volver a la página de inicio tras cerrar sesión
+                goHome();
+            } catch (error) {
+                console.error("Error al cerrar sesión:", error);
+            }
+        }
+
+
         // --- NAVIGATION LOGIC ---
+        window.checkAuthAndEnterApp = function() {
+            if (currentUser && !currentUser.isAnonymous) {
+                enterApp();
+            } else {
+                showAuthModal();
+            }
+        }
+        
+        // Original logic, now requires auth check
         function enterApp() {
-            // Animación de salida Landing
             const landing = document.getElementById('landing-page');
             const navbarLinks = document.getElementById('nav-links');
             
@@ -286,25 +484,22 @@
                 landing.style.display = 'none';
                 navbarLinks.style.display = 'none';
                 
-                // Animación de entrada App
                 const app = document.getElementById('app-studio');
                 app.classList.remove('hidden');
-                app.classList.add('fade-enter'); // CSS animation class
+                app.classList.add('fade-enter'); 
                 
-                // Inicializar Grid de App
                 initAppGrid();
             }, 400);
         }
 
-        function goHome() {
-            // Simplemente recargar por simplicidad en prototipo, o revertir clases
+        window.goHome = function() {
             location.reload();
         }
 
         // --- APP STUDIO LOGIC ---
         function initAppGrid() {
             const grid = document.getElementById('avatar-grid');
-            grid.innerHTML = ''; // Clear
+            grid.innerHTML = '';
             avatars.forEach((av, idx) => {
                 const el = document.createElement('div');
                 el.className = `avatar-select relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group transition-all hover:shadow-md ${idx === 0 ? 'active' : ''}`;
@@ -320,17 +515,14 @@
         }
 
         function selectAvatar(src, el) {
-            // UI Update
             document.querySelectorAll('.avatar-select').forEach(d => d.classList.remove('active'));
             if(el) el.classList.add('active');
 
-            // Preview Update
             const preview = document.getElementById('main-preview');
             preview.style.opacity = 0;
             setTimeout(() => {
                 preview.src = src;
                 preview.style.opacity = 1;
-                // Reset video state
                 document.getElementById('result-video').classList.add('hidden');
                 document.getElementById('result-video').pause();
                 document.getElementById('main-preview').classList.remove('hidden');
@@ -338,7 +530,7 @@
             }, 200);
         }
 
-        function setTab(tab) {
+        window.setTab = function(tab) {
             const libView = document.getElementById('view-library');
             const aiView = document.getElementById('view-ai');
             const btnLib = document.getElementById('tab-lib');
@@ -358,13 +550,12 @@
         }
 
         // --- SIMULATION LOGIC (API HOOKS) ---
-
-        function simulateAIGen() {
+        window.simulateAIGen = function() {
+            if (!currentUser || currentUser.isAnonymous) return showError("Debes iniciar sesión para usar Nanobanana.");
             const btn = document.getElementById('btn-ai-gen');
             const prompt = document.getElementById('ai-prompt').value;
-            if(!prompt) return alert("Escribe un prompt primero.");
+            if(!prompt) return showError("Escribe un prompt primero.");
 
-            // Loading state
             const originalText = btn.innerText;
             btn.innerHTML = `<span class="loader-ring"></span> Generando...`;
             btn.disabled = true;
@@ -374,7 +565,6 @@
                 btn.innerText = originalText;
                 btn.disabled = false;
                 
-                // Mock Result
                 const mockImg = "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=500&auto=format&fit=crop";
                 const resArea = document.getElementById('ai-result-area');
                 resArea.innerHTML = `
@@ -383,13 +573,14 @@
                         <div class="absolute top-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white"></div>
                     </div>
                 `;
-                selectAvatar(mockImg, null); // Auto select
+                selectAvatar(mockImg, null);
             }, 2000);
         }
 
-        function generateFinalVideo() {
+        window.generateFinalVideo = function() {
+            if (!currentUser || currentUser.isAnonymous) return showError("Debes iniciar sesión para usar Veo2/Sora.");
             const script = document.getElementById('script-input').value;
-            if(!script) return alert("Escribe un guion primero.");
+            if(!script) return showError("Escribe un guion primero.");
 
             const overlay = document.getElementById('processing-overlay');
             const txtMain = document.getElementById('process-text');
@@ -400,7 +591,6 @@
             overlay.classList.add('flex');
             btn.disabled = true;
 
-            // Secuencia de simulación (Veo2 / Sora)
             const steps = [
                 { t: 1000, m: "Sintetizando Voz...", d: "ElevenLabs Turbo v2.5" },
                 { t: 3000, m: "Animando Rostro...", d: "Mesh deformation engine" },
@@ -437,13 +627,12 @@
             vid.classList.remove('hidden');
             playBtn.classList.remove('hidden');
 
-            // Mock video url
             vid.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
             vid.muted = true;
             vid.play();
         }
 
-        function togglePlay() {
+        window.togglePlay = function() {
             const vid = document.getElementById('result-video');
             const btn = document.getElementById('play-btn-overlay');
             if(vid.paused) {
@@ -454,6 +643,9 @@
                 btn.style.opacity = 1;
             }
         }
+        
+        // Initial setup calls
+        initializeAuth();
     </script>
 </body>
 </html>
