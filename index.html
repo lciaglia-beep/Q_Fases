@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina AI - Crea Ads que convierten (Auth)</title>
+    <title>Lumina AI - Ads UGC con D3.js</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -30,38 +31,69 @@
         /* Utilidades */
         .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* Estilos específicos para el gráfico D3 */
+        .chart-container {
+            position: relative;
+            background: #111827; /* Fondo oscuro para contraste */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        .line {
+            fill: none;
+            stroke-width: 3px;
+        }
+        .roas-line { stroke: #10B981; } /* Color verde para ROAS */
+        .ctr-line { stroke: #3B82F6; } /* Color azul para CTR */
+        .axis text { font-size: 10px; fill: #6B7280; }
+        .axis line, .axis path { stroke: #374151; }
+        .grid line { stroke: #374151; stroke-opacity: 0.5; }
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 8px;
+            pointer-events: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: #1F2937;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="text-slate-900 h-screen flex flex-col overflow-hidden">
 
-    <!-- ================= 1. NAVBAR GLOBAL ================= -->
+    <!-- Navbar Fijo -->
     <nav class="glass-nav w-full h-16 flex items-center justify-between px-6 z-50 fixed top-0 left-0 transition-all duration-300" id="navbar">
-        <!-- Logo -->
         <div class="flex items-center gap-2 cursor-pointer" onclick="goHome()">
             <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold shadow-md">L</div>
             <span class="font-bold text-lg tracking-tight">Lumina</span>
         </div>
         
-        <!-- Nav Links (Solo visibles en Home) -->
+        <!-- Enlaces de navegación -->
         <div id="nav-links" class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
             <a href="#" class="hover:text-black transition-colors">Casos de Éxito</a>
             <a href="#" class="hover:text-black transition-colors">Precios</a>
             <a href="#" class="hover:text-black transition-colors">Para Agencias</a>
         </div>
 
-        <!-- CTA Buttons -->
+        <!-- Botones de Acción -->
         <div class="flex items-center gap-3">
             <button id="auth-button" onclick="showAuthModal()" class="text-sm font-medium text-slate-600 hover:text-black px-3 py-2 rounded-full transition-colors">
                 Login / Registro
             </button>
-            <button onclick="checkAuthAndEnterApp()" class="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg shadow-slate-200">
+            <button onclick="enterApp()" class="bg-black text-white text-sm font-medium px-5 py-2.5 rounded-full hover:scale-105 transition-transform shadow-lg shadow-slate-200">
                 Crear Video Gratis
             </button>
         </div>
     </nav>
 
-    <!-- ================= 2. LANDING PAGE (PRESENTACIÓN) ================= -->
-    <section id="landing-page" class="flex-1 pt-20 overflow-y-auto bg-white relative">
+    <!-- Sección de Landing Page (Scrollable) -->
+    <section id="landing-page" class="flex-1 pt-16 overflow-y-auto bg-white relative">
+        <!-- Hero Section -->
         <div class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center fade-enter">
             <div class="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 mb-8">
                 <span class="flex h-2 w-2 relative">
@@ -81,7 +113,7 @@
             </p>
             
             <div class="flex justify-center gap-4">
-                <button onclick="checkAuthAndEnterApp()" class="group bg-black text-white px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
+                <button onclick="enterApp()" class="group bg-black text-white px-8 py-4 rounded-2xl text-lg font-medium hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
                     <span>Comenzar a Crear</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
@@ -91,48 +123,67 @@
             </div>
         </div>
 
-        <!-- Visual Grid (Arcads Style) - Marquee infinito -->
+        <!-- Carrusel de Videos de Influencers (Actualizado con mejores imágenes) -->
         <div class="w-full py-12 overflow-hidden bg-slate-50/50 border-y border-slate-100">
             <div class="marquee-container">
                 <div class="marquee-content gap-6 px-6">
-                    <!-- Generamos cartas repetidas para el efecto infinito -->
+                    <!-- Video 1: Belleza -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1621217640698-c70f1a917244?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwYmVhdXR5JTIwcHJvZHVjdHxlbnwwfHx8fDE3MTc0MTg0Njh8MA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/F472B6/FFFFFF?text=Influencer+Belleza'" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <p class="text-white font-medium text-sm">Campaña Moda</p>
-                            <p class="text-white/70 text-xs">Generado en 12s</p>
+                            <p class="text-white font-medium text-sm">Serum Anti-Edad (Review)</p>
+                            <p class="text-white/70 text-xs">Voz: ElevenLabs, Estilo "Entusiasta"</p>
                         </div>
                     </div>
-                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <p class="text-white font-medium text-sm">Review Tech</p>
-                            <p class="text-white/70 text-xs">Voz: ElevenLabs</p>
-                        </div>
-                    </div>
+                     <!-- Video 2: Tecnología -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1621609764035-de241c0d4303?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHxpbmZsdWVuY2VyJTIwdGVjaCUyMHByb2R1Y3R8ZW58MHx8fHwxNzE3NDE4NjA3fDA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/3B82F6/FFFFFF?text=Influencer+Tecnología'" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <p class="text-white font-medium text-sm">Testimonio App</p>
-                            <p class="text-white/70 text-xs">Avatar: Pro</p>
+                            <p class="text-white font-medium text-sm">Unboxing: Smartwatch X</p>
+                            <p class="text-white/70 text-xs">Avatar: Leo (Pro), Fondo: Creado con IA</p>
                         </div>
                     </div>
+                    <!-- Video 3: Fitness -->
                     <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1579758774780-f09689456569?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwZml0bmVzcyUyMHN1cHBsZW1lbnRzfGVufDB8fHx8MTcxNzQxODcyM3ww&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/10B981/FFFFFF?text=Influencer+Fitness'" class="w-full h-full object-cover">
                         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                            <p class="text-white font-medium text-sm">E-learning</p>
-                            <p class="text-white/70 text-xs">Lip-Sync: Perfecto</p>
+                            <p class="text-white font-medium text-sm">Mi Rutina + Proteína</p>
+                            <p class="text-white/70 text-xs">Generado en 15s. Máximo CTR</p>
                         </div>
                     </div>
-                    <!-- Repetimos para efecto scroll (simplificado) -->
+                    <!-- Video 4: Finanzas -->
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1558239062-817349195971?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwcHJvZHVjdCUyMHJldmlld3xlbnwwfHx8fDE3MTc0MTg1NTh8MA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/F59E0B/FFFFFF?text=Influencer+Finanzas'" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Plataforma de Trading</p>
+                            <p class="text-white/70 text-xs">Lip-Sync: Perfecto, Voz: Española</p>
+                        </div>
+                    </div>
+                    
                     <div class="w-64 aspect-[9/16] bg-slate-200 rounded-2xl flex items-center justify-center">
-                        <span class="text-slate-400 font-medium">Ver más...</span>
+                        <span class="text-slate-400 font-medium">Ver más ejemplos UGC...</span>
+                    </div>
+                    <!-- Duplicación para efecto carrusel infinito -->
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1621217640698-c70f1a917244?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHNlYXJjaHwxfHxpbmZsdWVuY2VyJTIwYmVhdXR5JTIwcHJvZHVjdHxlbnwwfHx8fDE3MTc0MTg0Njh8MA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/F472B6/FFFFFF?text=Influencer+Belleza'" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Serum Anti-Edad (Review)</p>
+                            <p class="text-white/70 text-xs">Voz: ElevenLabs, Estilo "Entusiasta"</p>
+                        </div>
+                    </div>
+                     
+                    <div class="w-64 aspect-[9/16] rounded-2xl overflow-hidden relative shadow-lg group cursor-pointer hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://images.unsplash.com/photo-1621609764035-de241c0d4303?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQ3NDd8MHwxfHxpbmZsdWVuY2VyJTIwdGVjaCUyMHByb2R1Y3R8ZW58MHx8fHwxNzE3NDE4NjA3fDA&ixlib=rb-4.0.3&q=80&w=500" onerror="this.onerror=null;this.src='https://placehold.co/500x889/3B82F6/FFFFFF?text=Influencer+Tecnología'" class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                            <p class="text-white font-medium text-sm">Unboxing: Smartwatch X</p>
+                            <p class="text-white/70 text-xs">Avatar: Leo (Pro), Fondo: Creado con IA</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Social Proof -->
+        <!-- Logos de Clientes -->
         <div class="py-12 text-center">
             <p class="text-sm text-slate-400 font-medium uppercase tracking-widest mb-6">Utilizado por los mejores growth hackers</p>
             <div class="flex justify-center items-center gap-12 opacity-40 grayscale">
@@ -142,10 +193,101 @@
                 <i class="fa-brands fa-airbnb text-3xl"></i>
             </div>
         </div>
+
+        <!-- NUEVA SECCIÓN: Resultados y Escalabilidad -->
+        <div class="bg-black py-20">
+            <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <!-- Columna 1: Agente IA y Logotipos (Inspirado en tu imagen) -->
+                <div class="text-white p-8 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4 tracking-tight">
+                            Crea tu propio <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-400 italic">Agente IA</span> para marketing
+                        </h2>
+                        <p class="text-slate-400 text-lg mb-8">
+                            La mejor librería UGC de IA con más de 1,000 Actores IA y voces multilingües.
+                        </p>
+                        <button onclick="enterApp()" class="group bg-white text-black px-6 py-3 rounded-xl font-semibold hover:bg-slate-100 transition-colors flex items-center gap-2 text-sm">
+                            <span>Crear tu Anuncio IA</span>
+                            <i class="fa-solid fa-sparkles text-yellow-500"></i>
+                        </button>
+                    </div>
+
+                    <!-- Grid de Logotipos de Integración -->
+                    <div class="relative mt-12 flex justify-center items-center">
+                        <div class="w-full h-full absolute flex items-center justify-center">
+                            <!-- Logo central de Lumina (Arcade/Vidrio) -->
+                            <div class="w-24 h-24 bg-white/30 backdrop-blur-md rounded-3xl flex items-center justify-center ring-4 ring-white/10 shadow-2xl z-10">
+                                <span class="text-3xl font-extrabold text-black/80">L</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Logotipos alrededor -->
+                        <div class="grid grid-cols-3 grid-rows-2 gap-x-16 gap-y-12 w-full max-w-sm" style="transform: rotate(15deg);">
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg) translateY(-10px) translateX(-5px);">
+                                <i class="fa-brands fa-slack text-white text-2xl opacity-70"></i>
+                            </div>
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg);">
+                                <img src="https://placehold.co/128x128/000000/FFFFFF?text=Arcade" alt="Arcade Logo" class="w-8 h-8 opacity-70">
+                            </div>
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg) translateY(10px) translateX(5px);">
+                                <img src="https://placehold.co/128x128/000000/FFFFFF?text=ElevenLabs" alt="Eleven Labs Logo" class="w-10 h-10 opacity-70">
+                            </div>
+                            
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg) translateY(5px) translateX(-10px);">
+                                <i class="fa-brands fa-tiktok text-white text-2xl opacity-70"></i>
+                            </div>
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg);">
+                                <i class="fa-solid fa-layer-group text-white text-2xl opacity-70"></i>
+                            </div>
+                            <div class="w-16 h-16 bg-black rounded-xl border border-slate-800 shadow-xl flex items-center justify-center" style="transform: rotate(-15deg) translateY(-5px) translateX(10px);">
+                                <i class="fa-solid fa-code text-white text-2xl opacity-70"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Columna 2: Gráfico de Resultados (D3.js) -->
+                <div class="text-white p-8 rounded-3xl bg-slate-900 border border-slate-800">
+                    <h2 class="text-3xl font-bold mb-2">
+                        +50% ROAS, <br>
+                        <span class="text-green-400">Resultados reales</span>
+                    </h2>
+                    <p class="text-slate-400 mb-6">
+                        Análisis de campaña (Simulación UGC vs. Creativo Clásico).
+                    </p>
+                    
+                    <div id="d3-chart-container" class="chart-container h-96">
+                        <div id="tooltip" class="tooltip"></div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-around text-sm font-medium">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            <span>ROAS (Lumina AI)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-blue-400"></div>
+                            <span>CTR (Lumina AI)</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- Fin de NUEVA SECCIÓN -->
+
+        <!-- Pie de página simple -->
+        <footer class="py-10 text-center text-sm text-slate-500 border-t border-slate-100 mt-16">
+            © 2025 Lumina AI. Todos los derechos reservados. | <a href="#" class="hover:underline">Privacidad</a>
+        </footer>
     </section>
 
-    <!-- ================= 3. APP STUDIO (OCULTO INICIALMENTE) ================= -->
-    <section id="app-studio" class="hidden flex-1 pt-16 overflow-hidden bg-slate-50 relative animate-fade-enter">
+    <!-- Sección de Aplicación (Oculta) -->
+    <section id="app-studio" class="hidden flex-1 pt-16 overflow-hidden bg-slate-50 relative">
         <aside class="w-80 bg-white border-r border-slate-200 flex flex-col z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] absolute top-16 bottom-0 left-0">
             <div class="flex p-3 border-b border-slate-100 gap-2">
                 <button onclick="setTab('library')" id="tab-lib" class="flex-1 bg-slate-100 text-black text-xs font-semibold py-2 rounded-lg transition-colors">Biblioteca</button>
@@ -206,6 +348,7 @@
                 <div class="mb-8">
                     <label class="text-xs font-bold text-slate-900 block mb-2">VOZ (ELEVENLABS)</label>
                     <div class="space-y-2">
+                        <!-- Ejemplo de voz seleccionada -->
                         <div class="flex items-center justify-between p-3 border border-black bg-slate-50 rounded-xl cursor-pointer">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-indigo-600 text-xs border border-indigo-50">
@@ -230,7 +373,7 @@
         </aside>
     </section>
 
-    <!-- ================= 4. AUTH MODAL (LOGIN/SIGNUP) ================= -->
+    <!-- Modal de Autenticación -->
     <div id="auth-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center transition-opacity duration-300">
         <div class="bg-white p-8 rounded-xl w-full max-w-md shadow-2xl scale-95 transition-transform duration-300" id="auth-box">
             <div class="flex justify-between items-center mb-6">
@@ -238,16 +381,6 @@
                 <button onclick="hideAuthModal()" class="text-slate-400 hover:text-black transition-colors"><i class="fa-solid fa-times"></i></button>
             </div>
             
-            <button onclick="signInWithGoogle()" class="w-full mb-4 py-3 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-                <i class="fa-brands fa-google text-lg"></i> Continuar con Google
-            </button>
-
-            <div class="flex items-center mb-4">
-                <hr class="flex-1 border-t border-slate-200">
-                <span class="px-3 text-xs text-slate-400">o con email</span>
-                <hr class="flex-1 border-t border-slate-200">
-            </div>
-
             <input type="email" id="auth-email" class="w-full p-3 mb-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Email">
             <input type="password" id="auth-password" class="w-full p-3 mb-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-black/5 outline-none" placeholder="Contraseña">
             
@@ -275,8 +408,6 @@
             onAuthStateChanged,
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
-            GoogleAuthProvider,
-            signInWithPopup,
             signOut
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
@@ -289,33 +420,30 @@
         let authReady = false;
         let currentUser = null;
         let authMode = 'login'; // 'login' or 'signup'
+        let currentTab = 'library';
 
         // --- MOCK DATA ---
         const avatars = [
-            { id: 1, img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop", name: "Sofia" },
-            { id: 2, img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop", name: "Maya" },
-            { id: 3, img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop", name: "Leo" },
-            { id: 4, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop", name: "Elena" }
+            { id: 1, img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500&auto=format&fit=crop", name: "Sofia", selected: true },
+            { id: 2, img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop", name: "Maya", selected: false },
+            { id: 3, img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop", name: "Leo", selected: false },
+            { id: 4, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=500&auto=format&fit=crop", name: "Elena", selected: false }
         ];
 
         // --- AUTHENTICATION FLOW ---
 
-        // Función de inicialización y manejo de la sesión
         async function initializeAuth() {
             try {
-                // 1. Intentar iniciar sesión con el token personalizado del Canvas
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
                     await signInWithCustomToken(auth, token);
                 } else {
-                    // 2. Si no hay token de Canvas, usar sesión anónima o existente.
                     if (!auth.currentUser) {
                         await signInAnonymously(auth);
                     }
                 }
             } catch (error) {
                 console.error("Error during initial sign-in:", error);
-                // Si falla el custom token, intentamos anónimo
                 try {
                     if (!auth.currentUser) await signInAnonymously(auth);
                 } catch (e) {
@@ -324,7 +452,6 @@
             }
         }
         
-        // Observador de estado de autenticación (Se ejecuta al cargar y al cambiar el estado)
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             authReady = true;
@@ -332,22 +459,20 @@
             const authBtn = document.getElementById('auth-button');
             const userDisplay = document.getElementById('user-display');
             
-            if (user) {
-                // Actualizar el botón de Login a Perfil/Logout
-                const email = user.email || 'Anónimo';
+            if (user && user.email) {
+                const email = user.email;
                 authBtn.innerHTML = `<i class="fa-solid fa-user-circle mr-1"></i> ${email.split('@')[0]}`;
                 authBtn.onclick = () => showLogoutOptions();
                 
                 userDisplay.innerHTML = `Usuario: <span class="text-black">${user.uid.substring(0, 8)}...</span>`;
 
             } else {
-                // Volver a mostrar Login
                 authBtn.innerHTML = `Login / Registro`;
                 authBtn.onclick = showAuthModal;
                 userDisplay.innerHTML = '';
             }
 
-            console.log("Auth state changed. User:", user ? user.uid : "None");
+            console.log("Auth state changed. User:", user ? (user.email || 'Anonymous') : "None");
         });
 
         // --- AUTH MODAL HANDLERS ---
@@ -361,7 +486,7 @@
             document.getElementById('auth-modal').classList.add('hidden');
             document.getElementById('auth-modal').classList.remove('flex');
             document.getElementById('auth-box').classList.add('scale-95');
-            document.getElementById('auth-error').classList.add('hidden'); // Clear error
+            document.getElementById('auth-error').classList.add('hidden');
         }
 
         function showError(message) {
@@ -419,23 +544,11 @@
             }
         }
 
-        window.signInWithGoogle = async function() {
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithPopup(auth, provider);
-                hideAuthModal();
-            } catch (error) {
-                console.error("Google sign-in error:", error);
-                showError("No se pudo iniciar sesión con Google.");
-            }
-        }
-
         // --- LOGOUT (Simple alert replacement) ---
         function showLogoutOptions() {
             const modal = document.getElementById('auth-modal');
             const box = document.getElementById('auth-box');
             
-            // Reemplazo temporal del contenido del modal para Logout
             box.innerHTML = `
                 <h2 class="text-xl font-bold mb-4">Opciones de Usuario</h2>
                 <p class="mb-6 text-slate-600">Sesión iniciada como: ${currentUser.email || 'Anónimo'}</p>
@@ -446,7 +559,6 @@
                     Volver
                 </button>
             `;
-            // Asegurar que se muestre el modal
             modal.classList.add('flex');
             modal.classList.remove('hidden');
         }
@@ -455,7 +567,6 @@
             try {
                 await signOut(auth);
                 hideAuthModal();
-                // Opcional: Volver a la página de inicio tras cerrar sesión
                 goHome();
             } catch (error) {
                 console.error("Error al cerrar sesión:", error);
@@ -463,189 +574,436 @@
         }
 
 
-        // --- NAVIGATION LOGIC ---
-        window.checkAuthAndEnterApp = function() {
-            if (currentUser && !currentUser.isAnonymous) {
-                enterApp();
-            } else {
-                showAuthModal();
+        // --- NAVIGATION LOGIC (AJUSTADO PARA ROBUSTEZ) ---
+        window.goHome = function() {
+            try {
+                const landing = document.getElementById('landing-page');
+                const app = document.getElementById('app-studio');
+                const navbarLinks = document.getElementById('nav-links');
+                
+                app.classList.add('hidden');
+                app.classList.remove('flex');
+                
+                // Mostrar la landing page
+                landing.style.display = 'block';
+                landing.classList.remove('fade-exit');
+                landing.classList.add('fade-enter');
+
+                navbarLinks.style.opacity = '1';
+            } catch (error) {
+                console.error("Error en goHome:", error);
             }
         }
-        
-        // Original logic, now requires auth check
-        function enterApp() {
+
+        window.enterApp = function() {
             const landing = document.getElementById('landing-page');
+            const app = document.getElementById('app-studio');
             const navbarLinks = document.getElementById('nav-links');
             
+            // 1. Iniciar la animación de salida
             landing.classList.add('fade-exit');
             navbarLinks.style.opacity = '0';
             
+            // 2. Esperar un poco más de tiempo para que la animación se complete
             setTimeout(() => {
-                landing.style.display = 'none';
-                navbarLinks.style.display = 'none';
-                
-                const app = document.getElementById('app-studio');
-                app.classList.remove('hidden');
-                app.classList.add('fade-enter'); 
-                
-                initAppGrid();
-            }, 400);
-        }
+                try {
+                    // Ocultar la landing page de forma permanente
+                    landing.style.display = 'none';
+                    landing.classList.remove('fade-exit'); // Limpiar la clase de animación
 
-        window.goHome = function() {
-            location.reload();
+                    // Mostrar y animar la sección de la aplicación
+                    app.classList.remove('hidden');
+                    app.classList.add('flex', 'fade-enter'); // 'flex' es crucial para el layout
+                    
+                    // Asegurar que se renderizan los avatares
+                    renderAvatars(); 
+
+                    navbarLinks.style.opacity = '1';
+                } catch (error) {
+                    // En caso de error, al menos intenta mostrar la app sin animación
+                    console.error("Error en la transición enterApp (Timeout):", error);
+                    landing.style.display = 'none';
+                    app.classList.remove('hidden');
+                    app.classList.add('flex');
+                }
+            }, 400); // Aumentado a 400ms para mayor fiabilidad
         }
 
         // --- APP STUDIO LOGIC ---
-        function initAppGrid() {
+
+        function renderAvatars() {
             const grid = document.getElementById('avatar-grid');
+            if (!grid) return; // Guard clause for robustness
             grid.innerHTML = '';
-            avatars.forEach((av, idx) => {
-                const el = document.createElement('div');
-                el.className = `avatar-select relative rounded-xl overflow-hidden aspect-[3/4] cursor-pointer group transition-all hover:shadow-md ${idx === 0 ? 'active' : ''}`;
-                el.onclick = () => selectAvatar(av.img, el);
-                el.innerHTML = `
-                    <img src="${av.img}" class="w-full h-full object-cover">
-                    <div class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span class="text-white text-[10px] font-medium">${av.name}</span>
-                    </div>
+            
+            avatars.forEach(avatar => {
+                const div = document.createElement('div');
+                div.className = `avatar-select w-full aspect-[4/5] rounded-xl overflow-hidden relative group cursor-pointer border-2 border-transparent transition-all duration-200 ${avatar.selected ? 'active border-black' : ''}`;
+                div.onclick = () => selectAvatar(avatar.id);
+                
+                div.innerHTML = `
+                    <img src="${avatar.img}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                    <div class="absolute bottom-2 left-2 text-white text-xs font-semibold bg-black/60 px-2 py-0.5 rounded">${avatar.name}</div>
                 `;
-                grid.appendChild(el);
+                grid.appendChild(div);
             });
         }
 
-        function selectAvatar(src, el) {
-            document.querySelectorAll('.avatar-select').forEach(d => d.classList.remove('active'));
-            if(el) el.classList.add('active');
-
-            const preview = document.getElementById('main-preview');
-            preview.style.opacity = 0;
-            setTimeout(() => {
-                preview.src = src;
-                preview.style.opacity = 1;
-                document.getElementById('result-video').classList.add('hidden');
-                document.getElementById('result-video').pause();
-                document.getElementById('main-preview').classList.remove('hidden');
-                document.getElementById('play-btn-overlay').classList.add('hidden');
-            }, 200);
+        window.selectAvatar = function(id) {
+            avatars.forEach(a => a.selected = a.id === id);
+            renderAvatars();
+            
+            // Actualizar la vista previa principal
+            const selectedAvatar = avatars.find(a => a.id === id);
+            if (selectedAvatar) {
+                document.getElementById('main-preview').src = selectedAvatar.img;
+            }
         }
 
         window.setTab = function(tab) {
-            const libView = document.getElementById('view-library');
-            const aiView = document.getElementById('view-ai');
-            const btnLib = document.getElementById('tab-lib');
-            const btnAi = document.getElementById('tab-ai');
+            currentTab = tab;
+            document.getElementById('tab-lib').classList.remove('bg-slate-100', 'text-black');
+            document.getElementById('tab-lib').classList.add('text-slate-500', 'hover:bg-slate-50');
+            document.getElementById('tab-ai').classList.remove('bg-slate-100', 'text-black');
+            document.getElementById('tab-ai').classList.add('text-slate-500', 'hover:bg-slate-50');
 
-            if(tab === 'library') {
-                libView.classList.remove('hidden');
-                aiView.classList.add('hidden');
-                btnLib.className = "flex-1 bg-slate-100 text-black text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm";
-                btnAi.className = "flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-1";
+            if (tab === 'library') {
+                document.getElementById('tab-lib').classList.add('bg-slate-100', 'text-black');
+                document.getElementById('tab-lib').classList.remove('text-slate-500', 'hover:bg-slate-50');
+                document.getElementById('view-library').classList.remove('hidden');
+                document.getElementById('view-ai').classList.add('hidden');
             } else {
-                libView.classList.add('hidden');
-                aiView.classList.remove('hidden');
-                btnAi.className = "flex-1 bg-indigo-50 text-indigo-600 text-xs font-semibold py-2 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1";
-                btnLib.className = "flex-1 text-slate-500 hover:bg-slate-50 text-xs font-semibold py-2 rounded-lg transition-colors";
+                document.getElementById('tab-ai').classList.add('bg-slate-100', 'text-black');
+                document.getElementById('tab-ai').classList.remove('text-slate-500', 'hover:bg-slate-50');
+                document.getElementById('view-library').classList.add('hidden');
+                document.getElementById('view-ai').classList.remove('hidden');
             }
         }
 
-        // --- SIMULATION LOGIC (API HOOKS) ---
-        window.simulateAIGen = function() {
-            if (!currentUser || currentUser.isAnonymous) return showError("Debes iniciar sesión para usar Nanobanana.");
-            const btn = document.getElementById('btn-ai-gen');
-            const prompt = document.getElementById('ai-prompt').value;
-            if(!prompt) return showError("Escribe un prompt primero.");
+        // Simulación de generación de video
+        window.generateFinalVideo = function() {
+            const script = document.getElementById('script-input').value.trim();
+            if (!script) {
+                showSimpleMessage("Error", "El guion no puede estar vacío.", "red");
+                return;
+            }
 
-            const originalText = btn.innerText;
-            btn.innerHTML = `<span class="loader-ring"></span> Generando...`;
-            btn.disabled = true;
+            const overlay = document.getElementById('processing-overlay');
+            const mainPreview = document.getElementById('main-preview');
+            const resultVideo = document.getElementById('result-video');
+            const processText = document.getElementById('process-text');
+            const processDetail = document.getElementById('process-detail');
+            const btnGenerate = document.getElementById('btn-generate');
+            
+            btnGenerate.disabled = true;
+            btnGenerate.innerHTML = '<span class="loader-ring mr-2"></span> Generando...';
 
-            // TODO: Llamada a Nanobanana API aquí
-            setTimeout(() => {
-                btn.innerText = originalText;
-                btn.disabled = false;
-                
-                const mockImg = "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=500&auto=format&fit=crop";
-                const resArea = document.getElementById('ai-result-area');
-                resArea.innerHTML = `
-                    <div onclick="selectAvatar('${mockImg}', this)" class="avatar-select active rounded-lg overflow-hidden aspect-square cursor-pointer ring-2 ring-indigo-500 relative">
-                        <img src="${mockImg}" class="w-full h-full object-cover">
-                        <div class="absolute top-1 right-1 bg-green-500 w-3 h-3 rounded-full border border-white"></div>
-                    </div>
-                `;
-                selectAvatar(mockImg, null);
+            mainPreview.classList.add('hidden');
+            resultVideo.classList.add('hidden');
+            resultVideo.pause();
+            overlay.classList.remove('hidden');
+            document.getElementById('play-btn-overlay').classList.add('hidden');
+
+
+            // Simular pasos de generación
+            const steps = [
+                { text: "Analizando guion y seleccionando voz...", detail: "Text-to-Speech (ElevenLabs)" },
+                { text: "Creando animación facial (Lip-Sync)...", detail: "Modelo de sincronización de movimiento" },
+                { text: "Renderizando video final...", detail: "GPU Cloud Render Farm" },
+            ];
+
+            let stepIndex = 0;
+            const interval = setInterval(() => {
+                if (stepIndex < steps.length) {
+                    processText.innerText = steps[stepIndex].text;
+                    processDetail.innerText = steps[stepIndex].detail;
+                    stepIndex++;
+                } else {
+                    clearInterval(interval);
+                    
+                    // Finalizar y mostrar el video simulado
+                    overlay.classList.add('hidden');
+                    
+                    // Usar un video de muestra (simulado)
+                    resultVideo.src = 'https://www.w3schools.com/html/mov_bbb.mp4';
+                    resultVideo.classList.remove('hidden');
+                    resultVideo.play();
+                    document.getElementById('play-btn-overlay').classList.remove('hidden');
+
+
+                    btnGenerate.disabled = false;
+                    btnGenerate.innerHTML = '<span>Generar Video (2 Créditos)</span> <i class="fa-solid fa-bolt text-yellow-300"></i>';
+                    
+                    showSimpleMessage("¡Video Listo!", "Tu video UGC con Avatar IA se ha generado correctamente.", "green");
+                }
             }, 2000);
         }
 
-        window.generateFinalVideo = function() {
-            if (!currentUser || currentUser.isAnonymous) return showError("Debes iniciar sesión para usar Veo2/Sora.");
-            const script = document.getElementById('script-input').value;
-            if(!script) return showError("Escribe un guion primero.");
-
-            const overlay = document.getElementById('processing-overlay');
-            const txtMain = document.getElementById('process-text');
-            const txtDet = document.getElementById('process-detail');
-            const btn = document.getElementById('btn-generate');
-
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            btn.disabled = true;
-
-            const steps = [
-                { t: 1000, m: "Sintetizando Voz...", d: "ElevenLabs Turbo v2.5" },
-                { t: 3000, m: "Animando Rostro...", d: "Mesh deformation engine" },
-                { t: 5500, m: "Renderizando Video...", d: "Raytracing lights & shadows" },
-                { t: 7000, m: "Finalizando...", d: "Compressing MP4" }
-            ];
-
-            let i = 0;
-            function nextStep() {
-                if(i >= steps.length) {
-                    finishVideo();
-                    return;
-                }
-                txtMain.innerText = steps[i].m;
-                txtDet.innerText = steps[i].d;
-                setTimeout(() => {
-                    i++;
-                    nextStep();
-                }, steps[i].t - (steps[i-1]?.t || 0));
-            }
-            nextStep();
-        }
-
-        function finishVideo() {
-            document.getElementById('processing-overlay').classList.remove('flex');
-            document.getElementById('processing-overlay').classList.add('hidden');
-            document.getElementById('btn-generate').disabled = false;
-
-            const vid = document.getElementById('result-video');
-            const img = document.getElementById('main-preview');
-            const playBtn = document.getElementById('play-btn-overlay');
-
-            img.classList.add('hidden');
-            vid.classList.remove('hidden');
-            playBtn.classList.remove('hidden');
-
-            vid.src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
-            vid.muted = true;
-            vid.play();
-        }
-
         window.togglePlay = function() {
-            const vid = document.getElementById('result-video');
-            const btn = document.getElementById('play-btn-overlay');
-            if(vid.paused) {
-                vid.play();
-                btn.style.opacity = 0;
+            const video = document.getElementById('result-video');
+            const playIcon = document.querySelector('#play-btn-overlay i');
+            
+            if (video.paused) {
+                video.play();
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
             } else {
-                vid.pause();
-                btn.style.opacity = 1;
+                video.pause();
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
             }
+        }
+
+
+        // Simulación de generación de imagen (AI Tab)
+        window.simulateAIGen = function() {
+            const prompt = document.getElementById('ai-prompt').value.trim();
+            const btn = document.getElementById('btn-ai-gen');
+            const resultArea = document.getElementById('ai-result-area');
+            
+            if (!prompt) {
+                 showSimpleMessage("Error", "El prompt no puede estar vacío.", "red");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader-ring mr-2 bg-black"></span> Generando...';
+            resultArea.innerHTML = '<p class="text-sm text-slate-500 mt-4 col-span-2 text-center">Generando 4 opciones de avatar...</p>';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = 'Generar Imagen';
+                
+                // Imágenes simuladas de avatares IA
+                const results = [
+                    { id: 10, img: "https://placehold.co/128x160/2563EB/FFFFFF?text=AI+Result+1" },
+                    { id: 11, img: "https://placehold.co/128x160/1D4ED8/FFFFFF?text=AI+Result+2" },
+                    { id: 12, img: "https://placehold.co/128x160/1E3A8A/FFFFFF?text=AI+Result+3" },
+                    { id: 13, img: "https://placehold.co/128x160/000000/FFFFFF?text=AI+Result+4" }
+                ];
+
+                resultArea.innerHTML = '';
+                results.forEach(res => {
+                    const div = document.createElement('div');
+                    div.className = `w-full aspect-[4/5] rounded-xl overflow-hidden relative group cursor-pointer border-2 border-transparent transition-all duration-200 hover:border-black`;
+                    div.onclick = () => showSimpleMessage("Avatar Creado", "Este avatar se ha añadido a tu librería. Selecciona para usar.", "blue");
+                    
+                    div.innerHTML = `
+                        <img src="${res.img}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <i class="fa-solid fa-check-circle text-white text-2xl"></i>
+                        </div>
+                    `;
+                    resultArea.appendChild(div);
+                });
+                
+            }, 3000);
+        }
+
+        // --- CUSTOM MESSAGE BOX ---
+        function showSimpleMessage(title, message, type) {
+            const modal = document.getElementById('auth-modal');
+            const box = document.getElementById('auth-box');
+            
+            let color = 'bg-black';
+            if (type === 'red') color = 'bg-red-600';
+            if (type === 'green') color = 'bg-green-600';
+            if (type === 'blue') color = 'bg-blue-600';
+
+            box.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 ${color} rounded-full flex items-center justify-center text-white">
+                        <i class="fa-solid ${type === 'red' ? 'fa-exclamation' : type === 'green' ? 'fa-check' : 'fa-info'}"></i>
+                    </div>
+                    <h2 class="text-xl font-bold">${title}</h2>
+                </div>
+                <p class="mb-6 text-slate-600">${message}</p>
+                <button onclick="hideAuthModal()" class="w-full py-3 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
+                    Aceptar
+                </button>
+            `;
+            // Re-utilizar el modal de auth para mostrar el mensaje
+            modal.classList.add('flex');
+            modal.classList.remove('hidden');
         }
         
-        // Initial setup calls
-        initializeAuth();
+        // --- D3 CHART LOGIC ---
+        function createD3Chart() {
+            const data = [
+                { week: 1, roas: 1.5, ctr: 2.0, label: "Clásico" },
+                { week: 2, roas: 1.6, ctr: 2.1, label: "Clásico" },
+                { week: 3, roas: 1.8, ctr: 2.3, label: "Inicio UGC" },
+                { week: 4, roas: 2.2, ctr: 2.8, label: "Escala UGC" },
+                { week: 5, roas: 2.5, ctr: 3.2, label: "Optimización" },
+                { week: 6, roas: 2.8, ctr: 3.5, label: "Virales" }
+            ];
+
+            const containerId = "#d3-chart-container";
+            const margin = { top: 20, right: 20, bottom: 30, left: 35 };
+            const containerEl = document.querySelector(containerId);
+            if (!containerEl) return;
+
+            const containerWidth = containerEl.clientWidth;
+            const containerHeight = containerEl.clientHeight;
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            // Eliminar cualquier SVG anterior
+            d3.select(containerId).select("svg").remove();
+
+            const svg = d3.select(containerId)
+                .append("svg")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Escalas
+            const x = d3.scaleBand()
+                .domain(data.map(d => `Semana ${d.week}`))
+                .range([0, width])
+                .padding(1);
+
+            const yRoas = d3.scaleLinear()
+                .domain([1.0, d3.max(data, d => d.roas) * 1.1])
+                .range([height, 0]);
+
+            const yCtr = d3.scaleLinear()
+                .domain([1.5, d3.max(data, d => d.ctr) * 1.1])
+                .range([height, 0]);
+
+            // Ejes
+            const xAxis = g => g
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickSize(0))
+                .call(g => g.select(".domain").remove()); // Remover la línea del dominio
+            
+            const yRoasAxis = g => g
+                .call(d3.axisLeft(yRoas).ticks(5).tickFormat(d3.format(".1f")))
+                .call(g => g.select(".domain").remove())
+                .call(g => g.selectAll(".tick line")
+                    .attr("class", "grid")
+                    .attr("x2", width));
+
+            // Agregar Ejes
+            svg.append("g").call(xAxis);
+            svg.append("g").call(yRoasAxis);
+
+            // Título Eje Y
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .attr("class", "axis-title")
+                .style("text-anchor", "middle")
+                .style("fill", "#9CA3AF")
+                .style("font-size", "10px")
+                .text("ROAS");
+            
+            // Líneas
+            const roasLine = d3.line()
+                .x(d => x(`Semana ${d.week}`))
+                .y(d => yRoas(d.roas))
+                .curve(d3.curveMonotoneX);
+
+            const ctrLine = d3.line()
+                .x(d => x(`Semana ${d.week}`))
+                .y(d => yCtr(d.ctr))
+                .curve(d3.curveMonotoneX);
+
+            // Path ROAS (verde)
+            const pathRoas = svg.append("path")
+                .datum(data)
+                .attr("class", "line roas-line")
+                .attr("d", roasLine);
+            
+            // Path CTR (azul)
+            const pathCtr = svg.append("path")
+                .datum(data)
+                .attr("class", "line ctr-line")
+                .attr("d", ctrLine);
+
+            // Animación de la línea
+            const totalLengthRoas = pathRoas.node().getTotalLength();
+            pathRoas
+                .attr("stroke-dasharray", totalLengthRoas + " " + totalLengthRoas)
+                .attr("stroke-dashoffset", totalLengthRoas)
+                .transition()
+                .duration(2000)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0);
+
+            const totalLengthCtr = pathCtr.node().getTotalLength();
+            pathCtr
+                .attr("stroke-dasharray", totalLengthCtr + " " + totalLengthCtr)
+                .attr("stroke-dashoffset", totalLengthCtr)
+                .transition()
+                .duration(2000)
+                .delay(500) // Retraso para que inicie un poco después
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0);
+
+            // Tooltip
+            const tooltip = d3.select("#tooltip");
+
+            // Círculos y Eventos de Interacción
+            const lines = [
+                { data: data, scale: yRoas, class: "roas-dot", color: "#10B981", name: "ROAS" },
+                { data: data, scale: yCtr, class: "ctr-dot", color: "#3B82F6", name: "CTR" }
+            ];
+
+            lines.forEach(line => {
+                svg.selectAll(`.${line.class}`)
+                    .data(line.data)
+                    .enter().append("circle")
+                    .attr("class", line.class)
+                    .attr("r", 6)
+                    .attr("cx", d => x(`Semana ${d.week}`))
+                    .attr("cy", d => line.scale(d[line.name.toLowerCase()]))
+                    .style("fill", line.color)
+                    .style("stroke", "#111827")
+                    .style("stroke-width", 2)
+                    .style("opacity", 0) // Inicia oculto
+                    .transition()
+                    .delay(2000) // Muestra después de la animación de línea
+                    .duration(500)
+                    .style("opacity", 1);
+
+                svg.selectAll(`.${line.class}`)
+                    .on("mouseover", function(event, d) {
+                        d3.select(this).attr("r", 8).style("filter", "brightness(1.2)");
+                        tooltip.html(`
+                            <div class="font-bold text-xs mb-1">${line.name}: <span style="color:${line.color};">${d[line.name.toLowerCase()].toFixed(2)}</span></div>
+                            <div class="text-xs text-slate-500">${d.label} (Semana ${d.week})</div>
+                        `)
+                        .style("opacity", 1)
+                        .style("transform", "translateY(0)");
+                    })
+                    .on("mousemove", function(event) {
+                        const [xPos, yPos] = d3.pointer(event, document.querySelector(containerId));
+                        tooltip.style("left", (xPos + 10) + "px")
+                               .style("top", (yPos - 10) + "px");
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this).attr("r", 6).style("filter", "none");
+                        tooltip.style("opacity", 0)
+                               .style("transform", "translateY(10px)");
+                    });
+            });
+        }
+        
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            initializeAuth(); // Iniciar Firebase Auth
+            renderAvatars(); // Renderizar avatares en el estudio
+            createD3Chart(); // Crear el gráfico D3
+
+            // Escuchar el resize para actualizar el gráfico
+            window.addEventListener('resize', createD3Chart); 
+        };
     </script>
 </body>
 </html>
+
