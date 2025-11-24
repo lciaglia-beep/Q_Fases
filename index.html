@@ -53,6 +53,15 @@
 
         /* Selected Avatar State */
         .avatar-item.selected { ring: 3px solid #000; transform: scale(0.95); }
+
+        /* Bloqueado Button Style */
+        .btn-locked { 
+            cursor: not-allowed; 
+            background-color: #e5e7eb; 
+            color: #9ca3af; 
+            box-shadow: none;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
@@ -73,11 +82,9 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <button onclick="window.showAuthModal()" class="hidden md:block text-sm font-semibold text-slate-600 hover:text-black px-4 py-2 transition-colors">
-                Iniciar Sesión
-            </button>
-            <button onclick="window.enterApp()" class="bg-black text-white text-sm font-semibold px-6 py-3 rounded-full hover:shadow-xl hover:shadow-slate-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
-                <span>Probar Demo</span>
+            <!-- Botón Probar Demo (Modificado para ir a Contacto) -->
+            <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" class="bg-black text-white text-sm font-semibold px-6 py-3 rounded-full hover:shadow-xl hover:shadow-slate-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                <span>Solicitar Demo</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </button>
         </div>
@@ -91,8 +98,8 @@
             
             <!-- Badge -->
             <div class="fade-up inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full pl-2 pr-4 py-1 mb-8 hover:border-slate-300 transition-colors cursor-default">
-                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-200">NUEVO</span>
-                <span class="text-xs font-medium text-slate-600">Integración API v2.0 Lanzada</span>
+                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">NUEVO</span>
+                <span class="text-xs font-medium text-slate-600">Integración Sora 2 Pro</span>
                 <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
             </div>
             
@@ -104,17 +111,17 @@
             
             <!-- Subheadline -->
             <p class="fade-up delay-200 text-xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
-                Anuncios en minutos con avatares IA. Sin actores, sin equipos, sin costes. 
+                Anuncios listos en minutos. Sin actores, sin equipos. 
                 <span class="text-slate-900 font-medium">Rápido, barato y escalable.</span>
             </p>
             
-            <!-- CTA Buttons -->
+            <!-- CTA Buttons (Crear Anuncio IA bloqueado) -->
             <div class="fade-up delay-300 flex flex-col sm:flex-row justify-center gap-4 mb-20">
-                <button onclick="window.enterApp()" class="bg-black text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-slate-800 transition-all shadow-2xl shadow-slate-200 flex items-center justify-center gap-3">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <button title="Disponible Próximamente en la versión Enterprise" class="btn-locked text-lg font-semibold px-8 py-4 rounded-2xl shadow-md flex items-center justify-center gap-3 opacity-60">
+                    <i class="fa-solid fa-lock"></i>
                     <span>Crear Anuncio IA</span>
                 </button>
-                <button onclick="document.getElementById('contact').scrollIntoView()" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-slate-50 transition-colors flex items-center justify-center gap-3">
+                <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-slate-50 transition-colors flex items-center justify-center gap-3">
                     <i class="fa-regular fa-calendar"></i>
                     <span>Hablar con Ventas</span>
                 </button>
@@ -126,44 +133,60 @@
                 <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
                 
                 <div class="marquee-wrapper py-8">
-                    <div class="marquee-content gap-6 px-6">
-                        <!-- VIDEO 1 -->
+                    <div class="marquee-content gap-6 px-6" id="video-marquee-content">
+                        <!-- Videos: video1.mp4 a video6.mp4 (Se completarán dinámicamente) -->
                         <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
                             <video src="video1.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+1" autoplay loop muted playsinline></video>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
                             <div class="absolute bottom-5 left-5 text-white">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">E-commerce</div>
-                                <div class="font-semibold">Beauty Product Review</div>
+                                <div class="font-semibold">Review de Producto</div>
                             </div>
                         </div>
 
-                        <!-- VIDEO 2 -->
                         <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
                             <video src="video2.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+2" autoplay loop muted playsinline></video>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
                             <div class="absolute bottom-5 left-5 text-white">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">SaaS</div>
-                                <div class="font-semibold">App Walkthrough</div>
+                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Fintech</div>
+                                <div class="font-semibold">App de Inversión</div>
                             </div>
                         </div>
 
-                        <!-- VIDEO 3 -->
                         <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
                             <video src="video3.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+3" autoplay loop muted playsinline></video>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
                             <div class="absolute bottom-5 left-5 text-white">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Fintech</div>
-                                <div class="font-semibold">User Testimonial</div>
+                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Wellness</div>
+                                <div class="font-semibold">Testimonio Fitness</div>
                             </div>
                         </div>
 
-                        <!-- VIDEO 4 (Añadido) -->
                         <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
                             <video src="video4.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+4" autoplay loop muted playsinline></video>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
                             <div class="absolute bottom-5 left-5 text-white">
+                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Estética</div>
+                                <div class="font-semibold">Tutorial de Cuidado</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Videos Adicionales -->
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
+                            <video src="video5.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+5" autoplay loop muted playsinline></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                            <div class="absolute bottom-5 left-5 text-white">
+                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Sport</div>
+                                <div class="font-semibold">Rutina de Entrenamiento</div>
+                            </div>
+                        </div>
+                        
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer">
+                            <video src="video6.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+6" autoplay loop muted playsinline></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                            <div class="absolute bottom-5 left-5 text-white">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Viral</div>
-                                <div class="font-semibold">Trend Response</div>
+                                <div class="font-semibold">Tendencia en 24h</div>
                             </div>
                         </div>
 
@@ -174,13 +197,26 @@
                         <div class="video-card w-[280px] aspect-[9/16] bg-slate-100">
                              <video src="video2.mp4" autoplay loop muted playsinline></video>
                         </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100">
+                             <video src="video3.mp4" autoplay loop muted playsinline></video>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100">
+                             <video src="video4.mp4" autoplay loop muted playsinline></video>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100">
+                             <video src="video5.mp4" autoplay loop muted playsinline></video>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100">
+                             <video src="video6.mp4" autoplay loop muted playsinline></video>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <!-- Logos -->
+            <!-- Logos Modificados -->
             <div class="mt-16 border-y border-slate-100 py-10">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Empresas que escalan con Lumina</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Empresas interesadas en escalar con IA</p>
                 <div class="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
                     <i class="fa-brands fa-spotify text-4xl"></i>
                     <i class="fa-brands fa-airbnb text-4xl"></i>
@@ -242,10 +278,10 @@
                             </div>
                             <div class="flex gap-4">
                                 <div class="flex items-center gap-2 text-xs font-mono">
-                                    <span class="w-2 h-2 rounded-full bg-green-400"></span> Lumina
+                                    <span class="w-2 h-2 rounded-full bg-green-400"></span> Lumina (ROAS)
                                 </div>
                                 <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
-                                    <span class="w-2 h-2 rounded-full bg-slate-600"></span> Stock
+                                    <span class="w-2 h-2 rounded-full bg-slate-600"></span> Stock (CTR)
                                 </div>
                             </div>
                         </div>
@@ -264,7 +300,7 @@
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">El UGC sintético funciona.</span>
                     </h2>
                     <p class="text-slate-400 text-lg mb-8 leading-relaxed">
-                        Nuestros clientes reportan un incremento promedio del <span class="text-white font-bold">50% en ROAS</span> y una reducción del <span class="text-white font-bold">70% en CPA</span> al implementar creativos masivos generados con Lumina.
+                        Según estudios de mercado, el UGC generado por IA está produciendo <span class="text-white font-bold">incrementos de CTR de hasta el 47%</span> y una <span class="text-white font-bold">reducción del 29% en el CPA</span>. La escalabilidad automatizada es la clave.
                     </p>
                     
                     <ul class="space-y-4 mb-10">
@@ -278,8 +314,8 @@
                         </li>
                     </ul>
 
-                    <button onclick="window.enterApp()" class="text-white border-b border-white pb-1 hover:text-indigo-400 hover:border-indigo-400 transition-colors">
-                        Ver caso de estudio completo <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    <button onclick="window.showCaseStudy()" class="text-white border-b border-white pb-1 hover:text-indigo-400 hover:border-indigo-400 transition-colors">
+                        Ver caso de estudio (Beauty) <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -293,18 +329,37 @@
                     <p class="text-slate-500 mb-8 max-w-lg mx-auto">Únete a más de 500 marcas innovadoras. Rellena el formulario para acceder a la beta Enterprise.</p>
                     
                     <form onsubmit="handleContact(event)" class="max-w-md mx-auto space-y-4 text-left">
+                        
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Profesional</label>
-                            <input type="email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="nombre@empresa.com">
+                            <label for="name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nombre Completo</label>
+                            <input type="text" id="name" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="Tu nombre">
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Interés Principal</label>
-                            <select class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all">
-                                <option>Demo de la Plataforma</option>
+                            <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Profesional</label>
+                            <input type="email" id="email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="nombre@empresa.com">
+                        </div>
+
+                        <div>
+                            <label for="company" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Empresa</label>
+                            <input type="text" id="company" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="Tu empresa">
+                        </div>
+
+                        <div>
+                            <label for="category" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Categoría de Interés</label>
+                            <select id="category" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all">
+                                <option>Demo de la Plataforma (Recomendado)</option>
                                 <option>Acceso API</option>
                                 <option>Información para Inversores</option>
+                                <option>Soporte y Partners</option>
                             </select>
                         </div>
+
+                        <div>
+                            <label for="message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mensaje (Opcional)</label>
+                            <textarea id="message" class="w-full h-24 px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all resize-none" placeholder="¿Cómo podemos ayudarte?"></textarea>
+                        </div>
+
                         <button type="submit" class="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-slate-800 hover:scale-[1.02] transition-all shadow-lg mt-4">
                             Solicitar Acceso
                         </button>
@@ -316,15 +371,21 @@
         <!-- FOOTER -->
         <footer class="bg-white py-12 border-t border-slate-100 text-sm">
             <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-2 opacity-80">
+                <div class="flex items-center gap-2 opacity-80 mb-4 md:mb-0">
                     <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center text-white text-xs font-bold">L</div>
                     <span class="font-bold tracking-tight">Lumina AI © 2025</span>
                 </div>
                 
-                <div class="flex gap-8 text-slate-500">
-                    <a href="#" class="hover:text-black">Términos</a>
-                    <a href="#" class="hover:text-black">Privacidad</a>
-                    <a href="#" class="hover:text-black">Twitter</a>
+                <div class="flex flex-wrap justify-center gap-8 text-slate-500">
+                    <a href="#" class="hover:text-black">Términos y Condiciones</a>
+                    <a href="#" class="hover:text-black">Política de Privacidad</a>
+                </div>
+                
+                <!-- Redes Sociales -->
+                <div class="flex gap-4 text-xl text-slate-400">
+                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-tiktok"></i></a>
                 </div>
             </div>
         </footer>
@@ -349,39 +410,55 @@
             
             <div class="flex-1 overflow-y-auto p-5">
                 <div class="grid grid-cols-2 gap-3" id="avatar-grid">
-                     <!-- Avatar 1 -->
+                     <!-- Avatar 1 - E-commerce -->
                      <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group selected" 
                           onclick="selectAvatar(this, 'video1.mp4')"
                           style="background-image: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Sofia (Viral)</span>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Sofia (E-commerce)</span>
                         <div class="hidden group-[.selected]:flex absolute inset-0 border-[3px] border-indigo-500 rounded-xl items-center justify-center bg-indigo-500/10">
                             <i class="fa-solid fa-check-circle text-white drop-shadow-md text-2xl"></i>
                         </div>
                      </div>
 
-                     <!-- Avatar 2 -->
+                     <!-- Avatar 2 - Fintech -->
                      <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group" 
                           onclick="selectAvatar(this, 'video2.mp4')"
                           style="background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=300')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Leo (Tech)</span>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Leo (Fintech)</span>
                      </div>
 
-                     <!-- Avatar 3 -->
+                     <!-- Avatar 3 - Wellness -->
                      <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group" 
                           onclick="selectAvatar(this, 'video3.mp4')"
                           style="background-image: url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=300')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Emma (UGC)</span>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Emma (Wellness)</span>
                      </div>
 
-                     <!-- Avatar 4 -->
+                     <!-- Avatar 4 - Estética -->
                      <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group" 
                           onclick="selectAvatar(this, 'video4.mp4')"
                           style="background-image: url('https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=300')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">David (Pro)</span>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">David (Estética)</span>
+                     </div>
+
+                     <!-- Avatar 5 - Sport -->
+                     <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group" 
+                          onclick="selectAvatar(this, 'video5.mp4')"
+                          style="background-image: url('https://images.unsplash.com/photo-1588698263836-8dc9a6f19430?q=80&w=300')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Mike (Sport)</span>
+                     </div>
+
+                     <!-- Avatar 6 - Viral -->
+                     <div class="avatar-item aspect-[3/4] rounded-xl bg-cover bg-center cursor-pointer border border-slate-200 hover:border-slate-400 transition relative overflow-hidden group" 
+                          onclick="selectAvatar(this, 'video6.mp4')"
+                          style="background-image: url('https://images.unsplash.com/photo-1567532939625-8332d96c4d44?q=80&w=300')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <span class="absolute bottom-2 left-2 text-white text-xs font-bold">Chloe (Viral)</span>
                      </div>
                 </div>
             </div>
@@ -407,8 +484,7 @@
             
             <!-- Contenedor del Teléfono (Vertical Forzado) -->
             <div class="relative w-[340px] h-[600px] bg-black rounded-[2.5rem] shadow-2xl ring-8 ring-slate-900 overflow-hidden group transform transition-all duration-500">
-                <!-- Video Preview (Con Audio Habilitado) -->
-                <!-- NOTA: El atributo 'muted' se ha quitado aquí para que suene al darle play -->
+                <!-- Video Preview -->
                 <video id="preview-player" src="video1.mp4" class="w-full h-full object-cover" loop playsinline></video>
                 
                 <!-- Controls Overlay -->
@@ -441,21 +517,38 @@
         </main>
     </section>
 
-    <!-- Modal Auth (Simple) -->
-    <div id="auth-modal" class="fixed inset-0 bg-slate-900/40 z-[100] hidden items-center justify-center backdrop-blur-md transition-all">
-        <div class="bg-white p-10 rounded-3xl w-full max-w-sm shadow-2xl transform scale-100 transition-all">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-bold">Bienvenido</h2>
-                <button onclick="window.hideAuthModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"><i class="fa-solid fa-times"></i></button>
+    <!-- Modal para Caso de Estudio (Simple) -->
+    <div id="case-study-modal" class="fixed inset-0 bg-slate-900/40 z-[100] hidden items-center justify-center backdrop-blur-md transition-all">
+        <div class="bg-white p-10 rounded-3xl w-full max-w-xl shadow-2xl transform scale-100 transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-indigo-600">Caso de Estudio: Beauty & E-commerce</h2>
+                <button onclick="window.hideCaseStudyModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors"><i class="fa-solid fa-times"></i></button>
             </div>
-            <button class="w-full bg-black text-white font-bold py-4 rounded-xl mb-4 flex items-center justify-center gap-3 transition-transform hover:scale-[1.02]">
-                <i class="fa-brands fa-google text-lg"></i> Continuar con Google
-            </button>
-            <button class="w-full border border-slate-200 font-bold text-slate-700 py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-colors">
-                <i class="fa-regular fa-envelope text-lg"></i> Usar Email
-            </button>
-            <p class="text-[10px] text-center text-slate-400 mt-6 leading-relaxed">
-                Al continuar aceptas nuestros términos.
+            <p class="text-sm text-slate-600 mb-4 border-b pb-4 border-slate-100">
+                **Desafío:** Una marca de cosméticos buscaba aumentar las tasas de conversión en lanzamientos de nuevos productos con un presupuesto limitado para *influencers*.
+            </p>
+            <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-chart-line text-green-600 mt-1"></i>
+                    <div>
+                        <span class="font-bold text-slate-800">Solución:</span> Generación de 50 variaciones de anuncios UGC sintéticos con avatares de Lumina.
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-percent text-blue-600 mt-1"></i>
+                    <div>
+                        <span class="font-bold text-slate-800">Resultado 1 (CTR):</span> Incremento promedio del **28% en el *Click-Through Rate*** (tasa de clics) comparado con el contenido de la marca.
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-dollar-sign text-indigo-600 mt-1"></i>
+                    <div>
+                        <span class="font-bold text-slate-800">Resultado 2 (CPA):</span> **19% menos coste por adquisición (CPA)** debido a una mayor relevancia percibida por el usuario.
+                    </div>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-6">
+                *Datos basados en pruebas A/B realizadas por empresas de alto crecimiento en el sector e-commerce, reflejando el rendimiento superior del contenido que simula autenticidad.*
             </p>
         </div>
     </div>
@@ -483,18 +576,22 @@
             v.pause();
         }
 
-        window.showAuthModal = () => document.getElementById('auth-modal').classList.replace('hidden', 'flex');
-        window.hideAuthModal = () => document.getElementById('auth-modal').classList.replace('flex', 'hidden');
+        window.showCaseStudyModal = () => document.getElementById('case-study-modal').classList.replace('hidden', 'flex');
+        window.hideCaseStudyModal = () => document.getElementById('case-study-modal').classList.replace('flex', 'hidden');
+        window.showCaseStudy = () => window.showCaseStudyModal();
+
 
         // --- Video Logic ---
         window.togglePlay = function() {
             const v = document.getElementById('preview-player');
             const icon = document.getElementById('play-icon');
             
-            // Aseguramos que no esté muteado
+            // Aseguramos que no esté muteado para que el usuario pueda escucharlo si tiene audio
             v.muted = false;
 
             if(v.paused) {
+                // Intentar reproducir. Es necesario el catch porque la reproducción automática con audio
+                // solo funciona después de una interacción del usuario.
                 v.play().catch(e => console.log("User interaction needed for audio play"));
                 icon.classList.remove('fa-play');
                 icon.classList.add('fa-pause');
@@ -509,8 +606,6 @@
             // Remove selected class from all
             document.querySelectorAll('.avatar-item').forEach(el => {
                 el.classList.remove('selected');
-                el.classList.remove('ring-4');
-                el.classList.remove('ring-indigo-500');
             });
             
             // Add selected to clicked
@@ -520,14 +615,15 @@
             const player = document.getElementById('preview-player');
             const icon = document.getElementById('play-icon');
             
-            // Fade effect simulation
+            // Simulación de efecto de carga/fade
+            player.style.transition = 'opacity 0.2s';
             player.style.opacity = '0.5';
             
             setTimeout(() => {
                 player.src = videoSrc;
-                player.muted = false; // Asegurar audio activo
+                player.muted = false; // Audio activo
                 
-                // Intentar reproducir (requiere interacción previa del usuario con el documento)
+                // Intenta reproducir el video.
                 player.play().catch(e => {
                     console.log("Audio play blocked until interaction");
                     icon.classList.add('fa-play');
@@ -544,18 +640,42 @@
             e.preventDefault();
             const btn = e.target.querySelector('button');
             const originalText = btn.innerText;
-            btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Enviado';
-            btn.classList.replace('bg-black', 'bg-green-600');
+            
+            // Usar un modal o un mensaje de éxito en lugar de alert()
+            const formContainer = e.target.closest('.text-center');
+            
+            // Simular envío
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btn.classList.replace('bg-black', 'bg-indigo-600');
+            
             setTimeout(() => {
-                alert("¡Gracias! Hemos recibido tu solicitud. Te contactaremos en breve.");
-                btn.innerText = originalText;
-                btn.classList.replace('bg-green-600', 'bg-black');
+                
+                // Mostrar mensaje de éxito temporal en el contenedor
+                const successMessage = document.createElement('div');
+                successMessage.className = 'absolute inset-0 bg-white/95 backdrop-blur-sm rounded-[2.5rem] flex items-center justify-center text-green-600 text-2xl font-bold flex-col p-12';
+                successMessage.innerHTML = '<i class="fa-solid fa-circle-check text-5xl mb-4"></i><span>¡Solicitud Recibida!</span><p class="text-sm font-normal text-slate-500 mt-2">Te contactaremos a la brevedad.</p>';
+                formContainer.style.position = 'relative';
+                formContainer.appendChild(successMessage);
+
+                // Resetear el botón y el formulario
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-indigo-600', 'bg-black');
                 e.target.reset();
-            }, 500);
+
+                // Eliminar el mensaje de éxito después de un tiempo
+                setTimeout(() => {
+                    formContainer.removeChild(successMessage);
+                }, 3000);
+                
+            }, 1500);
         }
 
         // --- D3.js Chart Logic ---
         document.addEventListener("DOMContentLoaded", () => {
+            // Inicializa con el primer video en el preview del App Studio
+            const v = document.getElementById('preview-player');
+            if (v) v.src = 'video1.mp4';
+            
             drawChart();
             window.addEventListener('resize', drawChart);
         });
@@ -564,7 +684,9 @@
             const container = document.getElementById('d3-chart-container');
             if (!container) return;
             
-            container.innerHTML = '<div id="tooltip" class="tooltip"></div>';
+            // Limpiar y asegurar el tooltip
+            container.innerHTML = '';
+            const tooltip = d3.select("#tooltip").style("opacity", 0); 
             
             const width = container.clientWidth;
             const height = container.clientHeight;
@@ -577,32 +699,43 @@
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
+            // Datos Simulados (ROAS de Lumina y CTR de Stock)
             const data = Array.from({length: 12}, (_, i) => ({
                 day: i + 1,
-                roas: 1.8 + Math.random() * 1.5 + (i * 0.3), 
-                ctr: 0.8 + Math.random() * 0.5 + (i * 0.08)
+                // ROAS Lumina (creciente)
+                roas: 2.2 + Math.random() * 1.5 + (i * 0.35), 
+                // CTR Stock (más plano)
+                ctr: 0.8 + Math.random() * 0.4 + (i * 0.05)
             }));
 
             const x = d3.scaleLinear().domain([1, 12]).range([0, width - margin.left - margin.right]);
             const yRoas = d3.scaleLinear().domain([0, 7]).range([height - margin.top - margin.bottom, 0]);
             
+            // Definición de Gradiente para la línea de Lumina (ROAS)
             const defs = svg.append("defs");
             const gradient = defs.append("linearGradient")
                 .attr("id", "line-gradient")
                 .attr("x1", "0%").attr("y1", "0%")
                 .attr("x2", "100%").attr("y2", "0%");
-            gradient.append("stop").attr("offset", "0%").attr("stop-color", "#4ade80");
-            gradient.append("stop").attr("offset", "100%").attr("stop-color", "#22d3ee");
+            gradient.append("stop").attr("offset", "0%").attr("stop-color", "#4ade80"); // Verde
+            gradient.append("stop").attr("offset", "100%").attr("stop-color", "#22d3ee"); // Cian
 
-            const lineRoas = d3.line().curve(d3.curveCatmullRom).x(d => x(d.day)).y(d => yRoas(d.roas));
-            const lineCtr = d3.line().curve(d3.curveCatmullRom).x(d => x(d.day)).y(d => yRoas(d.ctr * 2)); 
-
+            // Eje Y (Solo para referencia)
             svg.append("g")
                 .attr("class", "grid")
+                .attr("transform", `translate(0,0)`)
+                .call(d3.axisLeft(yRoas).ticks(5).tickSize(-(width - margin.left - margin.right)).tickFormat(d => d > 0 ? `${d.toFixed(1)}x` : ""))
+                .selectAll("text").style("fill", "rgba(255,255,255,0.4)").style("font-size", "10px");
+            
+            // Eje X (Solo para referencia)
+            svg.append("g")
                 .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
-                .call(d3.axisBottom(x).ticks(6).tickSize(-(height - margin.top - margin.bottom)).tickFormat(""))
-                .selectAll("line").style("stroke", "rgba(255,255,255,0.1)");
+                .call(d3.axisBottom(x).ticks(6).tickFormat(d => `Semana ${d}`))
+                .selectAll("text").style("fill", "rgba(255,255,255,0.6)").style("font-size", "10px");
 
+
+            // Línea Lumina (ROAS)
+            const lineRoas = d3.line().curve(d3.curveCatmullRom).x(d => x(d.day)).y(d => yRoas(d.roas));
             const pathRoas = svg.append("path")
                 .datum(data)
                 .attr("fill", "none")
@@ -611,12 +744,15 @@
                 .attr("d", lineRoas)
                 .attr("filter", "drop-shadow(0 0 8px rgba(74, 222, 128, 0.4))");
             
+            // Animación de la línea ROAS
             const totalLength = pathRoas.node().getTotalLength();
             pathRoas.attr("stroke-dasharray", totalLength + " " + totalLength)
                 .attr("stroke-dashoffset", totalLength)
                 .transition().duration(2500).ease(d3.easeCubicOut)
                 .attr("stroke-dashoffset", 0);
 
+            // Línea Stock (CTR)
+            const lineCtr = d3.line().curve(d3.curveCatmullRom).x(d => x(d.day)).y(d => yRoas(d.ctr * 2)); // Escalado para mejor visualización
             svg.append("path")
                 .datum(data)
                 .attr("fill", "none")
@@ -626,9 +762,8 @@
                 .attr("opacity", 0.5)
                 .attr("d", lineCtr);
 
-            const tooltip = d3.select("#tooltip");
-            
-            svg.selectAll(".dot")
+            // Puntos de Interacción (ROAS)
+            svg.selectAll(".dot-roas")
                 .data(data)
                 .enter().append("circle")
                 .attr("cx", d => x(d.day))
@@ -637,11 +772,35 @@
                 .attr("fill", "#0f172a")
                 .attr("stroke", "#4ade80")
                 .attr("stroke-width", 2)
+                .style("cursor", "pointer")
                 .on("mouseover", (event, d) => {
                     tooltip.style("opacity", 1)
-                           .html(`Semana ${d.day}<br><span style="color:#16a34a">ROAS: ${d.roas.toFixed(2)}x</span>`)
-                           .style("left", (event.pageX + 10) + "px")
-                           .style("top", (event.pageY - 40) + "px");
+                           .html(`Semana ${d.day}<br>ROAS: <span style="color:#16a34a">${d.roas.toFixed(2)}x</span>`)
+                           .style("left", (event.pageX + 15) + "px") // Mover a la derecha del puntero
+                           .style("top", (event.pageY - 30) + "px"); // Mover arriba del puntero
+                    d3.select(event.currentTarget).attr("r", 9).attr("fill", "#fff");
+                })
+                .on("mouseout", (event) => {
+                    tooltip.style("opacity", 0);
+                    d3.select(event.currentTarget).attr("r", 6).attr("fill", "#0f172a");
+                });
+                
+            // Puntos de Interacción (CTR)
+            svg.selectAll(".dot-ctr")
+                .data(data)
+                .enter().append("circle")
+                .attr("cx", d => x(d.day))
+                .attr("cy", d => yRoas(d.ctr * 2))
+                .attr("r", 6)
+                .attr("fill", "#0f172a")
+                .attr("stroke", "#94a3b8")
+                .attr("stroke-width", 2)
+                .style("cursor", "pointer")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1)
+                           .html(`Semana ${d.day}<br>CTR: <span style="color:#94a3b8">${d.ctr.toFixed(2)}%</span>`)
+                           .style("left", (event.pageX + 15) + "px")
+                           .style("top", (event.pageY - 30) + "px");
                     d3.select(event.currentTarget).attr("r", 9).attr("fill", "#fff");
                 })
                 .on("mouseout", (event) => {
@@ -652,4 +811,5 @@
     </script>
 </body>
 </html>
+
 
