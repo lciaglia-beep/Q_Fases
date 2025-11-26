@@ -19,16 +19,21 @@
         
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
         
+        /* Animación Flotante para Elementos UI */
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float 7s ease-in-out infinite 1s; }
+
         /* Marquee Infinito (Optimizado) */
         .marquee-wrapper { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); overflow: hidden; }
-        .marquee-content { display: inline-flex; animation: scroll 50s linear infinite; } /* Ajustado a 50s para suavidad con 7 videos */
+        .marquee-content { display: inline-flex; animation: scroll 50s linear infinite; } 
         .marquee-content:hover { animation-play-state: paused; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
         /* Estilos UI */
         .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
         
-        /* Gráfico D3 (Actualizado a Gris Profesional) */
+        /* Gráfico D3 (Gris Profesional) */
         .chart-bg { background: radial-gradient(circle at top right, #404040, #171717); border: 1px solid rgba(255,255,255,0.1); }
         .tooltip {
             position: absolute; background: rgba(255, 255, 255, 0.98); padding: 8px 12px; border-radius: 6px;
@@ -36,21 +41,39 @@
             opacity: 0; transition: opacity 0.2s; z-index: 50; border: 1px solid #e2e8f0;
         }
 
-        /* Video Cards */
+        /* Video Cards Optimizado */
         .video-card { 
             position: relative; overflow: hidden; border-radius: 1.5rem; 
             transform: translateZ(0); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
             background-color: #000;
             transition: transform 0.3s ease;
         }
-        .video-card video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* Video opacity transition for lazy load */
+        .video-card video { 
+            width: 100%; height: 100%; object-fit: cover; 
+            transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+            opacity: 0; /* Hidden initially until loaded */
+        }
+        .video-card video.loaded { opacity: 1; }
+        
         .video-card:hover { transform: scale(1.02); z-index: 10; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.2); }
         .video-card:hover video { transform: scale(1.05); }
+
+        /* Loading Spinner */
+        .loader {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 24px; height: 24px;
+            border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
         /* Overlay Play Icon on Hover */
         .play-overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.3s ease;
+            opacity: 0; transition: opacity 0.3s ease; z-index: 20;
         }
         .video-card:hover .play-overlay { opacity: 1; }
 
@@ -73,6 +96,22 @@
             box-shadow: none;
             pointer-events: none;
         }
+
+        /* Floating UI Elements */
+        .floating-badge {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 0; /* Behind main content */
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
@@ -93,7 +132,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <!-- Botón Probar Demo (Modificado para ir a Contacto) -->
+            <!-- Botón Probar Demo -->
             <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })" class="bg-black text-white text-sm font-semibold px-6 py-3 rounded-full hover:shadow-xl hover:shadow-slate-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
                 <span>Solicitar Demo</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -107,27 +146,48 @@
         <!-- Hero Section -->
         <div class="max-w-7xl mx-auto px-6 pt-20 pb-16 text-center relative">
             
+            <!-- Nuevos Elementos Flotantes (Floating UI) -->
+            <div class="hidden lg:flex floating-badge top-32 left-10 animate-float">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="text-left">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">Estado</div>
+                    <div class="text-sm font-bold text-slate-800">Render Completado</div>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex floating-badge bottom-40 right-10 animate-float-delayed">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="text-left">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">AI Studio</div>
+                    <div class="text-sm font-bold text-slate-800">Generando Guion...</div>
+                </div>
+            </div>
+
             <!-- Badge -->
-            <div class="fade-up inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full pl-2 pr-4 py-1 mb-8 hover:border-slate-300 transition-colors cursor-default">
+            <div class="fade-up inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full pl-2 pr-4 py-1 mb-8 hover:border-slate-300 transition-colors cursor-default relative z-10">
                 <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">NUEVO</span>
                 <span class="text-xs font-medium text-slate-600">Integración Sora 2 Pro</span>
                 <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
             </div>
             
             <!-- Headline -->
-            <h1 class="fade-up delay-100 text-6xl md:text-7xl lg:text-8xl font-extrabold text-slate-900 mb-8 tracking-tight leading-[1.05]">
+            <h1 class="fade-up delay-100 text-6xl md:text-7xl lg:text-8xl font-extrabold text-slate-900 mb-8 tracking-tight leading-[1.05] relative z-10">
                 Escala tu contenido UGC <br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-500 via-slate-800 to-black">sin cámaras ni actores.</span>
             </h1>
             
             <!-- Subheadline -->
-            <p class="fade-up delay-200 text-xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed font-light">
+            <p class="fade-up delay-200 text-xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed font-light relative z-10">
                 Anuncios listos en minutos. Sin actores, sin equipos. 
                 <span class="text-slate-900 font-medium">Rápido, barato y escalable.</span>
             </p>
             
-            <!-- CTA Buttons (Crear Anuncio IA bloqueado) -->
-            <div class="fade-up delay-300 flex flex-col sm:flex-row justify-center gap-4 mb-20">
+            <!-- CTA Buttons -->
+            <div class="fade-up delay-300 flex flex-col sm:flex-row justify-center gap-4 mb-20 relative z-10">
                 <button title="Disponible Próximamente en la versión Enterprise" class="btn-locked text-lg font-semibold px-8 py-4 rounded-2xl shadow-md flex items-center justify-center gap-3 opacity-60">
                     <i class="fa-solid fa-lock"></i>
                     <span>Crear Anuncio IA</span>
@@ -139,148 +199,149 @@
             </div>
 
             <!-- Video Marquee (Showcase) -->
-            <div class="fade-up delay-300 w-full relative">
+            <div class="fade-up delay-300 w-full relative z-10">
                 <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
                 <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
                 
                 <div class="marquee-wrapper py-8">
                     <div class="marquee-content gap-6 px-6" id="video-marquee-content">
                         
-                        <!-- ========================= -->
-                        <!--       ORIGINAL VIDEOS     -->
-                        <!-- ========================= -->
+                        <!-- NOTA: Usamos 'data-src' en lugar de 'src' para Lazy Loading -->
 
                         <!-- VIDEO 1 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video1.mp4')">
-                            <video src="video1.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+1" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video1.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video1.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+1" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">E-commerce</div>
                                 <div class="font-semibold">Review de Producto</div>
                             </div>
                         </div>
 
                         <!-- VIDEO 2 (FIXED) -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video2.mp4')">
-                            <video src="video2.mp4" poster="https://placehold.co/560x996/333333/FFFFFF?text=Video+2" autoplay loop muted playsinline onerror="this.poster='https://placehold.co/560x996/red/white?text=Error+Video'"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video2.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video2.mp4" poster="https://placehold.co/560x996/333333/FFFFFF?text=Video+2" loop muted playsinline class="lazy-video" onerror="this.poster='https://placehold.co/560x996/red/white?text=Error+Video'"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Fintech</div>
                                 <div class="font-semibold">App de Inversión</div>
                             </div>
                         </div>
 
                         <!-- VIDEO 3 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video3.mp4')">
-                            <video src="video3.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+3" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video3.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video3.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+3" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Wellness</div>
                                 <div class="font-semibold">Testimonio Fitness</div>
                             </div>
                         </div>
 
                         <!-- VIDEO 4 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video4.mp4')">
-                            <video src="video4.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+4" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video4.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video4.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Estética</div>
                                 <div class="font-semibold">Tutorial de Cuidado</div>
                             </div>
                         </div>
                         
                         <!-- VIDEO 5 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video5.mp4')">
-                            <video src="video5.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+5" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video5.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video5.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+5" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Sport</div>
                                 <div class="font-semibold">Rutina de Entrenamiento</div>
                             </div>
                         </div>
                         
                         <!-- VIDEO 6 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video6.mp4')">
-                            <video src="video6.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+6" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video6.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video6.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+6" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
+                            <div class="absolute bottom-5 left-5 text-white z-10">
                                 <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Viral</div>
                                 <div class="font-semibold">Tendencia en 24h</div>
                             </div>
                         </div>
 
-                        <!-- VIDEO 7 (NEW) -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 group cursor-pointer" onclick="openModal('video7.mp4')">
-                            <video src="video7.mp4" poster="https://placehold.co/560x996/2563eb/FFFFFF?text=Video+7" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <!-- VIDEO 7 -->
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video7.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video7.mp4" poster="https://placehold.co/560x996/2563eb/FFFFFF?text=Video+7" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Influencer</div>
-                                <div class="font-semibold">Vlog de recomendación</div>
+                            <div class="absolute bottom-5 left-5 text-white z-10">
+                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Travel</div>
+                                <div class="font-semibold">Vlog de Viaje</div>
                             </div>
                         </div>
 
-                        <!-- ========================= -->
-                        <!--    CLONES (FOR LOOP)      -->
-                        <!-- ========================= -->
-                        <!-- Must Match Originals Exactly -->
-
-                        <!-- Clone 1 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video1.mp4')">
-                             <video src="video1.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 2 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video2.mp4')">
-                             <video src="video2.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 3 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video3.mp4')">
-                             <video src="video3.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 4 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video4.mp4')">
-                             <video src="video4.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 5 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video5.mp4')">
-                             <video src="video5.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 6 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video6.mp4')">
-                             <video src="video6.mp4" autoplay loop muted playsinline></video>
-                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
-                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <!-- Clone 7 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-100 cursor-pointer" onclick="openModal('video7.mp4')">
-                            <video src="video7.mp4" autoplay loop muted playsinline></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90"></div>
+                        <!-- CLONES (FOR LOOP) -->
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video1.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video1.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
                             <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                       </div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video2.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video2.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video3.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video3.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video4.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video4.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video5.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video5.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video6.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video6.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
+                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video7.mp4')">
+                            <div class="loader"></div>
+                            <video data-src="video7.mp4" loop muted playsinline class="lazy-video"></video>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
+                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
+                        </div>
 
                     </div>
                 </div>
             </div>
 
             <!-- Logos -->
-            <div class="mt-16 border-y border-slate-100 py-10">
+            <div class="mt-16 border-y border-slate-100 py-10 relative z-10">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Empresas interesadas en escalar con IA</p>
                 <div class="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
                     <i class="fa-brands fa-spotify text-4xl"></i>
@@ -306,7 +367,7 @@
                             <i class="fa-solid fa-bolt text-2xl text-blue-600"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-3">Velocidad Extrema</h3>
-                        <p class="text-slate-500 leading-relaxed">De guión a video final en minutos, no semanas. Reacciona a tendencias virales instantáneamente.</p>
+                        <p class="text-slate-500 leading-relaxed">De guion a video final en minutos, no semanas. Reacciona a tendencias virales instantáneamente.</p>
                     </div>
 
                     <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 hover:-translate-y-1 transition-transform">
@@ -475,6 +536,50 @@
     </div>
 
     <script>
+        // --- Lazy Load Logic ---
+        document.addEventListener("DOMContentLoaded", function() {
+            var lazyVideos = [].slice.call(document.querySelectorAll("video.lazy-video"));
+
+            if ("IntersectionObserver" in window) {
+                var videoObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            var video = entry.target;
+                            // Move data-src to src to start loading
+                            if (video.dataset.src) {
+                                video.src = video.dataset.src;
+                                video.load();
+                                // Once data is ready enough to play, autoplay it
+                                video.play().then(() => {
+                                    video.classList.add("loaded"); // Fade in
+                                }).catch(e => {
+                                    // Auto-play might fail on some browsers if not muted, but these are muted
+                                    video.classList.add("loaded"); 
+                                });
+                                video.removeAttribute("data-src");
+                                videoObserver.unobserve(video);
+                            }
+                        }
+                    });
+                }, {
+                    rootMargin: "200px 0px" // Load videos slightly before they appear on screen
+                });
+
+                lazyVideos.forEach(function(video) {
+                    videoObserver.observe(video);
+                });
+            } else {
+                // Fallback for older browsers
+                lazyVideos.forEach(function(video) {
+                    if(video.dataset.src) {
+                        video.src = video.dataset.src;
+                        video.removeAttribute("data-src");
+                        video.classList.add("loaded");
+                    }
+                });
+            }
+        });
+
         // --- Modal Logic ---
         const modal = document.getElementById('video-modal');
         const modalVideo = document.getElementById('modal-video-player');
@@ -505,6 +610,5 @@
     </script>
 </body>
 </html>
-
 
 
