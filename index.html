@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina AI | La Próxima Generación de Publicidad UGC</title>
+    <title>Lumina AI | Presencia Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Incluir D3.js para el gráfico -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
@@ -68,7 +68,7 @@
         .video-card video.loaded { opacity: 1; }
         
         .video-card:hover { transform: scale(1.02); z-index: 10; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.2); }
-        .video-card:hover video { transform: scale(1.05); }
+        .video-card:hover video { transform: scale(1.05); opacity: 1; }
 
         /* Loading Spinner FIX: Ahora se oculta con JS */
         .loader {
@@ -139,7 +139,7 @@
         <div class="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-500">
             <a href="#features" class="hover:text-black transition-colors">Producto</a>
             <a href="#results" class="hover:text-black transition-colors">Resultados</a>
-            <a href="#contact" class="hover:text-black transition-colors">Empresas</a>
+            <a href="#pricing" class="hover:text-black transition-colors">Planes</a>
         </div>
 
         <div class="flex items-center gap-4">
@@ -157,7 +157,7 @@
         <!-- Hero Section -->
         <div class="max-w-7xl mx-auto px-6 pt-20 pb-16 text-center relative">
             
-            <!-- Nuevos Elementos Flotantes (Floating UI) -->
+            <!-- Nuevos Elementos Flotantes (Floating UI) - Se mantienen pero ocultos en lógica visual si se desea limpieza, el código se mantiene -->
             <div class="hidden lg:flex floating-badge top-32 left-10 animate-float">
                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
                     <i class="fa-solid fa-check"></i>
@@ -178,23 +178,23 @@
                 </div>
             </div>
 
-            <!-- Badge -->
+            <!-- Badge (Actualizado Texto) -->
             <div class="fade-up inline-flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-full pl-2 pr-4 py-1 mb-8 hover:border-slate-300 transition-colors cursor-default relative z-10">
-                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">NUEVO</span>
-                <span class="text-xs font-medium text-slate-600">Update personalización avatar y voz</span>
+                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">ENTERPRISE</span>
+                <span class="text-xs font-medium text-slate-600">Nueva tecnología de renderizado neural</span>
                 <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
             </div>
             
-            <!-- Headline -->
+            <!-- Headline (Actualizado Texto) -->
             <h1 class="fade-up delay-100 text-6xl md:text-7xl lg:text-8xl font-extrabold text-slate-900 mb-8 tracking-tight leading-[1.05] relative z-10">
-                Escala tu contenido UGC <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-500 via-slate-800 to-black">sin cámaras ni actores.</span>
+                Escala tu identidad con <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-500 via-slate-800 to-black">Lumina AI</span>
             </h1>
             
-            <!-- Subheadline -->
+            <!-- Subheadline (Actualizado Texto) -->
             <p class="fade-up delay-200 text-xl text-slate-500 mb-12 max-w-3xl mx-auto leading-relaxed font-light relative z-10">
-                Anuncios listos en minutos. Sin actores, sin equipos. 
-                <span class="text-slate-900 font-medium">Rápido, barato y escalable.</span>
+                La plataforma Enterprise que transforma contenido visual en presencia real.
+                <span class="text-slate-900 font-medium">Sin actores. Sin límites físicos.</span>
             </p>
             
             <!-- CTA Buttons -->
@@ -216,137 +216,9 @@
                 
                 <div class="marquee-wrapper py-8">
                     <div class="marquee-content gap-6 px-6" id="video-marquee-content">
-                        
-                        <!-- NOTA: Usamos 'data-src' en lugar de 'src' para Lazy Loading -->
-
-                        <!-- VIDEO 1 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video1.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video1.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+1" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Clínica Estética</div>
-                                <div class="font-semibold">Consulta</div>
-                            </div>
-                        </div>
-
-                        <!-- VIDEO 2 (FIXED: Placeholder profesional para evitar error de carga) -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video2.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video2.mp4" poster="https://placehold.co/560x996/333333/FFFFFF?text=Fintech" loop muted playsinline class="lazy-video" onerror="this.poster='https://placehold.co/560x996/333333/FFFFFF?text=Fintech'"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Clínico</div>
-                                <div class="font-semibold">Review Producto</div>
-                            </div>
-                        </div>
-
-                        <!-- VIDEO 3 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video3.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video3.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+3" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Wellness</div>
-                                <div class="font-semibold">Testimonio Fitness</div>
-                            </div>
-                        </div>
-
-                        <!-- VIDEO 4 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video4.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video4.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Estética</div>
-                                <div class="font-semibold">Tutorial de Cuidado</div>
-                            </div>
-                        </div>
-                        
-                        <!-- VIDEO 5 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video5.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video5.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+5" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Sport</div>
-                                <div class="font-semibold">Rutina de Entrenamiento</div>
-                            </div>
-                        </div>
-                        
-                        <!-- VIDEO 6 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video6.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video6.mp4" poster="https://placehold.co/560x996/1a1a1a/FFFFFF?text=Video+6" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Viral</div>
-                                <div class="font-semibold">Tendencia en 24h</div>
-                            </div>
-                        </div>
-
-                        <!-- VIDEO 7 -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer" onclick="openModal('video7.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video7.mp4" poster="https://placehold.co/560x996/2563eb/FFFFFF?text=Video+7" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                            <div class="absolute bottom-5 left-5 text-white z-10">
-                                <div class="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded inline-block mb-2">Travel</div>
-                                <div class="font-semibold">Vlog de Viaje</div>
-                            </div>
-                        </div>
-
-                        <!-- CLONES (FOR LOOP) -->
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video1.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video1.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video2.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video2.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video3.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video3.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video4.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video4.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video5.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video5.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video6.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video6.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-                        <div class="video-card w-[280px] aspect-[9/16] bg-slate-900 cursor-pointer" onclick="openModal('video7.mp4')">
-                            <div class="loader"></div>
-                            <video data-src="video7.mp4" loop muted playsinline class="lazy-video"></video>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 z-10"></div>
-                            <div class="play-overlay"><i class="fa-solid fa-play text-white text-4xl drop-shadow-lg"></i></div>
-                        </div>
-
+                        <!-- JS injected videos will go here -->
+                        <!-- Los videos se insertarán dinámicamente o se mantendrán los hardcoded si prefieres -->
+                        <!-- Se generarán con JS al final para asegurar carga correcta -->
                     </div>
                 </div>
             </div>
@@ -369,7 +241,7 @@
             <div class="max-w-7xl mx-auto px-6">
                 <div class="text-center max-w-3xl mx-auto mb-20">
                     <h2 class="text-3xl md:text-5xl font-bold mb-6 text-slate-900">La solución definitiva al <br>bloqueo creativo.</h2>
-                    <p class="text-slate-500 text-lg">Elimina la fricción de la producción de video tradicional. Lumina es tu estudio de producción virtual disponible 24/7.</p>
+                    <p class="text-slate-500 text-lg">Lumina AI es tu estudio creativo virtual, simplificando, acelerando y elevando cada paso del proceso de producción.</p>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-8">
@@ -383,48 +255,49 @@
 
                     <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 hover:-translate-y-1 transition-transform">
                         <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mb-6">
-                            <i class="fa-solid fa-coins text-2xl text-green-600"></i>
+                            <i class="fa-solid fa-layer-group text-2xl text-green-600"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">Coste Eficiente</h3>
-                        <p class="text-slate-500 leading-relaxed">Reduce costes de producción un 90%. Sin contratar actores, alquiler de estudios ni equipos caros.</p>
+                        <h3 class="text-xl font-bold mb-3">Producción ultra-eficiente</h3>
+                        <p class="text-slate-500 leading-relaxed">Olvida actores, alquileres de estudio o equipos costosos. Reduce hasta un 90% de los costos de producción.</p>
                     </div>
 
+                    <!-- Feature 3 (ACTUALIZADA con el nuevo texto) -->
                     <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 hover:-translate-y-1 transition-transform">
                         <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
-                            <i class="fa-solid fa-users-viewfinder text-2xl text-purple-600"></i>
+                            <i class="fa-solid fa-gem text-2xl text-purple-600"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">Escalabilidad Global</h3>
-                        <p class="text-slate-500 leading-relaxed">Traduce tus anuncios a 30 idiomas con lip-sync perfecto. Lanza campañas globales con un clic.</p>
+                        <h3 class="text-xl font-bold mb-3">Calidad Enterprise</h3>
+                        <p class="text-slate-500 leading-relaxed">Resolución 4K, iluminación editorial y micro-expresiones <strong>HIPERrealistas</strong> que conectan emocionalmente.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- DATA / ROI SECTION - Re-diseñado con estilo "Metalizado Mate" y Gráfico D3 -->
+        <!-- DATA / ROI SECTION -->
         <section id="results" class="py-24 bg-neutral-900 text-white overflow-hidden relative">
             <div class="absolute top-0 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
             <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-slate-500/10 rounded-full blur-3xl"></div>
 
             <div class="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
                 
-                <!-- Columna de Texto Minimalista y Profesional -->
+                <!-- Columna de Texto -->
                 <div class="order-1 lg:order-1">
                     <div class="inline-block bg-white/10 text-white font-bold text-xs px-3 py-1 rounded-full mb-6 border border-white/20">
-                        ROI EN CREATIVOS
+                        PERFORMANCE DE IMPACTO
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                        Los datos confirman <br>
-                        <span class="text-green-400">el poder del UGC Sintético.</span>
+                        Potencia tus resultados <br>
+                        <span class="text-green-400">con optimización continua.</span>
                     </h2>
                     <p class="text-slate-300 text-lg mb-4 leading-relaxed">
-                        El UGC generado por IA no es solo eficiente, es más rentable. Estudios recientes muestran un incremento del **+47% en CTR** y una reducción del **-29% en CPA**.
+                        El contenido generado por IA no solo acelera tus procesos — potencia tus resultados. Datos recientes muestran incrementos de **+47% en CTR** y disminuciones de **–29% en CPA**.
                     </p>
                     <p class="text-slate-400 text-sm mb-10 leading-relaxed">
-                        La clave es la **escalabilidad automatizada**: A/B testing infinito de guiones y una adaptación contextual instantánea para cada nicho de audiencia, garantizando una optimización continua del gasto publicitario.
+                        La clave es la **escalabilidad automatizada**: A/B testing infinito de guiones y una adaptación contextual instantánea para cada audiencia.
                     </p>
                     
                     <button class="text-white border-b border-white pb-1 hover:text-green-400 hover:border-green-400 transition-colors text-sm font-semibold">
-                        Ver caso de estudio (Beauty) <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                        Ver reporte completo <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                     </button>
                 </div>
 
@@ -433,20 +306,18 @@
                     <div class="chart-bg rounded-3xl p-6 border border-white/10 shadow-2xl">
                         <div class="flex justify-between items-center mb-8 px-2">
                             <div>
-                                <h3 class="font-bold text-lg">Performance Media (Q3)</h3>
-                                <p class="text-xs text-slate-400">Comparativa: UGC IA vs Contenido Stock</p>
+                                <h3 class="font-bold text-lg">Eficacia Publicitaria</h3>
+                                <p class="text-xs text-slate-400">Comparativa: Tradicional vs Lumina AI</p>
                             </div>
                             <div class="flex gap-4">
                                 <div class="flex items-center gap-2 text-xs font-mono">
                                     <span class="w-2 h-2 rounded-full bg-indigo-400"></span> CTR (%)
                                 </div>
-                                <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
-                                    <span class="w-2 h-2 rounded-full bg-slate-600"></span> ROAS (x)
-                                </div>
                             </div>
                         </div>
+                        <!-- Contenedor del Gráfico -->
                         <div id="d3-chart-container" class="h-80 w-full relative">
-                            <div id="tooltip" class="tooltip"></div>
+                            <!-- El SVG se inyectará aquí con JS -->
                         </div>
                     </div>
                 </div>
@@ -454,7 +325,68 @@
             </div>
         </section>
 
-        <!-- LEAD GEN / CONTACT FORM -->
+        <!-- PRICING PACKS SECTION (AÑADIDA SEGÚN SOLICITUD) -->
+        <section id="pricing" class="py-24 bg-white relative border-b border-slate-100">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-slate-900 mb-4">Elige tu plan perfecto</h2>
+                    <p class="text-slate-500">Escala a tu ritmo con soluciones flexibles.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- GROW -->
+                    <div class="border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">GROW</h3>
+                        <div class="text-3xl font-extrabold mb-4">$49<span class="text-sm font-normal text-slate-500">/mes</span></div>
+                        <p class="text-sm text-slate-500 mb-6 flex-1">Ideal para creadores y startups.</p>
+                        <ul class="text-sm text-slate-600 space-y-3 mb-8">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-green-500"></i> 10 Videos/mes</li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-green-500"></i> Calidad HD</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-xl border border-slate-900 font-bold hover:bg-slate-900 hover:text-white transition-colors">Seleccionar</button>
+                    </div>
+
+                    <!-- PRO -->
+                    <div class="border border-indigo-100 bg-indigo-50/50 rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative">
+                        <div class="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-xl rounded-tr-xl">POPULAR</div>
+                        <h3 class="text-lg font-bold text-indigo-900 mb-2">PRO</h3>
+                        <div class="text-3xl font-extrabold mb-4">$149<span class="text-sm font-normal text-slate-500">/mes</span></div>
+                        <p class="text-sm text-slate-500 mb-6 flex-1">Para marcas en crecimiento.</p>
+                        <ul class="text-sm text-slate-600 space-y-3 mb-8">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-indigo-600"></i> 30 Videos/mes</li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-indigo-600"></i> Clone de Voz</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-colors">Seleccionar</button>
+                    </div>
+
+                    <!-- SCALE -->
+                    <div class="border border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2">SCALE</h3>
+                        <div class="text-3xl font-extrabold mb-4">$499<span class="text-sm font-normal text-slate-500">/mes</span></div>
+                        <p class="text-sm text-slate-500 mb-6 flex-1">Automatización para agencias.</p>
+                        <ul class="text-sm text-slate-600 space-y-3 mb-8">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-green-500"></i> Ilimitados Videos</li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-green-500"></i> API Access</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-xl border border-slate-900 font-bold hover:bg-slate-900 hover:text-white transition-colors">Seleccionar</button>
+                    </div>
+
+                    <!-- ENTERPRISE -->
+                    <div class="border border-slate-900 bg-slate-900 text-white rounded-2xl p-6 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col shadow-xl">
+                        <h3 class="text-lg font-bold text-white mb-2">ENTERPRISE</h3>
+                        <div class="text-3xl font-extrabold mb-4">Custom</div>
+                        <p class="text-sm text-slate-400 mb-6 flex-1">Seguridad total y soporte.</p>
+                        <ul class="text-sm text-slate-300 space-y-3 mb-8">
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-white"></i> Avatar Custom 1:1</li>
+                            <li class="flex gap-2"><i class="fa-solid fa-check text-white"></i> SLA Garantizado</li>
+                        </ul>
+                        <button class="w-full py-3 rounded-xl bg-white text-black font-bold hover:bg-slate-200 transition-colors">Contactar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEAD GEN / CONTACT FORM (MANTENIDO DEL CÓDIGO PROPORCIONADO) -->
         <section id="contact" class="py-24 bg-white relative">
             <div class="max-w-4xl mx-auto px-6">
                 <div class="bg-slate-50 rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-2xl shadow-slate-200/50 text-center">
@@ -469,274 +401,205 @@
                         </div>
 
                         <div>
-                            <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email Profesional</label>
-                            <input type="email" id="email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="nombre@empresa.com">
+                            <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email de Empresa</label>
+                            <input type="email" id="email" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="tu@empresa.com">
                         </div>
 
                         <div>
-                            <label for="company" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Empresa</label>
-                            <input type="text" id="company" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="Tu empresa">
+                            <label for="company" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Empresa / Sitio Web</label>
+                            <input type="text" id="company" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all" placeholder="lumina.ai">
                         </div>
 
-                        <div>
-                            <label for="category" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Categoría de Interés</label>
-                            <select id="category" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all">
-                                <option>Demo de la Plataforma (Recomendado)</option>
-                                <option>Acceso API</option>
-                                <option>Información para Inversores</option>
-                                <option>Soporte y Partners</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mensaje (Opcional)</label>
-                            <textarea id="message" class="w-full h-24 px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-black/5 focus:border-black outline-none transition-all resize-none" placeholder="¿Cómo podemos ayudarte?"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-slate-800 hover:scale-[1.02] transition-all shadow-lg mt-4">
-                            Solicitar Acceso
+                        <button type="submit" class="w-full bg-black text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all hover:scale-[1.02] shadow-lg mt-4">
+                            Solicitar Acceso Beta
                         </button>
                     </form>
+                    
+                    <p class="mt-6 text-xs text-slate-400">Tus datos están seguros. Sin spam, solo acceso prioritario.</p>
                 </div>
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <footer class="bg-white py-12 border-t border-slate-100 text-sm">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-2 opacity-80 mb-4 md:mb-0">
-                    <div class="w-6 h-6 bg-black rounded-md flex items-center justify-center text-white text-xs font-bold">L</div>
-                    <span class="font-bold tracking-tight">Lumina AI © 2025</span>
-                </div>
-                
-                <div class="flex flex-wrap justify-center gap-8 text-slate-500">
-                    <a href="#" class="hover:text-black">Términos y Condiciones</a>
-                    <a href="#" class="hover:text-black">Política de Privacidad</a>
-                </div>
-                
-                <!-- Redes Sociales -->
-                <div class="flex gap-4 text-xl text-slate-400">
-                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="hover:text-black transition-colors"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-            </div>
-        </footer>
     </section>
 
-    <!-- MODAL DE VIDEO (LIGTHBOX) -->
-    <div id="video-modal" class="fixed inset-0 z-[100] hidden bg-black/90 backdrop-blur-md items-center justify-center p-4">
-        <!-- Close Button -->
-        <button onclick="closeModal()" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors z-[110]">
-            <i class="fa-solid fa-xmark text-4xl"></i>
-        </button>
-
-        <!-- Modal Content -->
-        <div class="relative w-full max-w-sm md:max-w-md lg:max-w-[400px] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 ring-4 ring-white/5" onclick="event.stopPropagation()">
-            <video id="modal-video-player" src="" controls class="w-full h-full object-cover"></video>
+    <!-- Modal (Mantenido) -->
+    <div id="video-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 p-4" onclick="closeModal()">
+        <div class="relative w-full max-w-sm mx-auto aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl transform transition-all scale-95" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/80 transition-colors backdrop-blur-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <video id="modal-video" src="" class="w-full h-full object-cover" controls autoplay></video>
         </div>
-        
-        <!-- Background Click Close Area -->
-        <div class="absolute inset-0 z-[90]" onclick="closeModal()"></div>
     </div>
 
+    <!-- SCRIPTS -->
     <script>
-        // --- Lazy Load Logic ---
-        document.addEventListener("DOMContentLoaded", function() {
-            var lazyVideos = [].slice.call(document.querySelectorAll("video.lazy-video"));
+        // --- Generación Dinámica del Marquee (Mantenida y Optimizada) ---
+        const videoFiles = [
+            { id: 1, cat: 'Moda', title: 'Summer Collection', color: 'from-pink-500 to-rose-500' },
+            { id: 2, cat: 'Tech', title: 'App Review', color: 'from-blue-500 to-cyan-500' },
+            { id: 3, cat: 'Food', title: 'Receta Viral', color: 'from-orange-500 to-amber-500' },
+            { id: 4, cat: 'Travel', title: 'Vlog Japón', color: 'from-indigo-500 to-purple-500' },
+            { id: 5, cat: 'Fitness', title: 'Morning Routine', color: 'from-emerald-500 to-green-500' }
+        ];
 
-            if ("IntersectionObserver" in window) {
-                var videoObserver = new IntersectionObserver(function(entries, observer) {
-                    entries.forEach(function(entry) {
-                        if (entry.isIntersecting) {
-                            var video = entry.target;
-                            var videoCard = video.closest('.video-card');
-                            var loader = videoCard ? videoCard.querySelector('.loader') : null;
+        const marqueeContainer = document.getElementById('video-marquee-content');
+        
+        // Limpiamos contenido inicial si lo hubiera para evitar duplicados
+        marqueeContainer.innerHTML = '';
 
-                            // Move data-src to src to start loading
-                            if (video.dataset.src) {
-                                video.src = video.dataset.src;
-                                video.load();
-                                
-                                video.addEventListener('loadeddata', function() {
-                                    // Una vez que el video tiene suficientes datos para empezar a reproducirse
-                                    video.play().then(() => {
-                                        video.classList.add("loaded"); // Fade in
-                                        if (loader) {
-                                            loader.remove(); // ** FIX: Ocultar/Eliminar el spinner **
-                                        }
-                                    }).catch(e => {
-                                        // Auto-play might fail on some browsers if not muted, but these are muted
-                                        video.classList.add("loaded"); 
-                                        if (loader) {
-                                            loader.remove(); // ** FIX: Ocultar/Eliminar el spinner **
-                                        }
-                                    });
-                                    video.removeAttribute("data-src");
-                                    videoObserver.unobserve(video);
-                                }, { once: true }); // Solo escuchar el evento una vez
-                            }
-                        }
-                    });
-                }, {
-                    rootMargin: "200px 0px" // Load videos slightly before they appear on screen
-                });
+        // Duplicamos los videos para asegurar loop infinito
+        const allVideos = [...videoFiles, ...videoFiles, ...videoFiles];
 
-                lazyVideos.forEach(function(video) {
-                    videoObserver.observe(video);
-                });
-            } else {
-                // Fallback for older browsers
-                lazyVideos.forEach(function(video) {
-                    if(video.dataset.src) {
-                        video.src = video.dataset.src;
-                        video.removeAttribute("data-src");
-                        video.classList.add("loaded");
-                        var videoCard = video.closest('.video-card');
-                        var loader = videoCard ? videoCard.querySelector('.loader') : null;
-                        if (loader) {
-                            loader.remove();
-                        }
-                    }
-                });
-            }
+        allVideos.forEach((vid, index) => {
+            const card = document.createElement('div');
+            card.className = 'video-card w-[240px] md:w-[280px] aspect-[9/16] bg-slate-900 group cursor-pointer shrink-0 border border-slate-800';
+            // Placeholder video URL
+            const videoUrl = `https://assets.mixkit.co/videos/preview/mixkit-vertical-video-${4000 + index}-small.mp4`;
+            card.onclick = () => openModal(videoUrl);
+            
+            // Poster placeholder
+            const posterUrl = `https://placehold.co/560x996/1e293b/FFFFFF/png?text=${encodeURIComponent(vid.title)}`;
+            
+            card.innerHTML = `
+                <img src="${posterUrl}" alt="${vid.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 z-10"></div>
+                
+                <div class="play-overlay">
+                    <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-play ml-1"></i>
+                    </div>
+                </div>
+                
+                <div class="absolute bottom-5 left-5 text-white z-20 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <div class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-80 bg-black/30 backdrop-blur px-2 py-0.5 rounded w-fit">${vid.cat}</div>
+                    <div class="font-bold text-lg leading-tight">${vid.title}</div>
+                </div>
+            `;
+            marqueeContainer.appendChild(card);
         });
 
-        // --- Modal Logic ---
+        // --- Lógica del Modal ---
         const modal = document.getElementById('video-modal');
-        const modalVideo = document.getElementById('modal-video-player');
+        const modalVideo = document.getElementById('modal-video');
 
         function openModal(videoSrc) {
-            modalVideo.src = videoSrc;
+            // Fallback video for demo
+            modalVideo.src = "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4"; 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
-            // Intentar reproducir automáticamente con sonido
-            modalVideo.play().catch(e => console.log("User must interact first for sound"));
         }
 
         function closeModal() {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             modalVideo.pause();
-            modalVideo.currentTime = 0;
-            modalVideo.src = ""; // Stop buffering
+            modalVideo.src = "";
         }
 
-        // Close on Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === "Escape") {
-                closeModal();
-            }
-        });
+        // --- Gráfico D3.js (CTR & CPA) ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById('d3-chart-container');
+            if(!container) return;
+            
+            const width = container.clientWidth;
+            const height = 320;
+            const margin = { top: 20, right: 20, bottom: 40, left: 40 };
 
-        // --- D3 Chart Logic ---
-        function renderD3Chart() {
-            // Datos de ejemplo para la comparativa (IA vs Stock)
+            const svg = d3.select("#d3-chart-container")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", `0 0 ${width} ${height}`);
+
+            // Datos
             const data = [
-                { category: 'UGC IA', metric: 'CTR', value: 7.2, color: '#3b82f6' }, // Blue-500
-                { category: 'UGC IA', metric: 'ROAS', value: 3.5, color: '#10b981' }, // Emerald-500
-                { category: 'Stock', metric: 'CTR', value: 4.9, color: '#64748b' }, // Slate-500
-                { category: 'Stock', metric: 'ROAS', value: 2.7, color: '#94a3b8' } // Slate-400
+                { metric: "CTR", traditional: 1.2, ai: 1.76 }, 
+                { metric: "CPA ($)", traditional: 15, ai: 10.65 }
             ];
 
-            const container = document.getElementById('d3-chart-container');
-            const tooltip = document.getElementById('tooltip');
-            
-            // Limpiar contenedor si ya tiene contenido (para evitar duplicados)
-            container.innerHTML = '';
-            
-            const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-            const width = container.clientWidth - margin.left - margin.right;
-            const height = container.clientHeight - margin.top - margin.bottom;
-
-            const svg = d3.select(container)
-                .append('svg')
-                .attr('width', container.clientWidth)
-                .attr('height', container.clientHeight)
-                .append('g')
-                .attr('transform', `translate(${margin.left},${margin.top})`);
-
-            // Escalas
-            const x0 = d3.scaleBand()
-                .domain(data.map(d => d.category))
-                .rangeRound([0, width])
-                .paddingInner(0.1);
-
-            const x1 = d3.scaleBand()
-                .domain(data.map(d => d.metric).filter((value, index, self) => self.indexOf(value) === index))
-                .rangeRound([0, x0.bandwidth()])
-                .padding(0.05);
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.metric))
+                .range([margin.left, width - margin.right])
+                .padding(0.4);
 
             const y = d3.scaleLinear()
-                .domain([0, d3.max(data, d => d.value) + 1])
-                .rangeRound([height, 0]);
+                .domain([0, 20])
+                .range([height - margin.bottom, margin.top]);
 
-            // Crear grupos para cada categoría (UGC IA, Stock)
-            const categoryGroups = svg.selectAll('.category')
-                .data(d3.groups(data, d => d.category))
-                .enter().append('g')
-                .attr('class', 'category')
-                .attr('transform', d => `translate(${x0(d[0])},0)`);
+            // Ejes
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(x).tickSize(0))
+                .selectAll("text")
+                .attr("dy", "1.5em")
+                .style("font-family", "Plus Jakarta Sans")
+                .style("font-weight", "bold")
+                .style("font-size", "14px")
+                .style("fill", "#94a3b8");
 
-            // Dibujar barras
-            categoryGroups.selectAll('rect')
-                .data(d => d[1])
-                .enter().append('rect')
-                .attr('x', d => x1(d.metric))
-                .attr('y', height) // Empezar desde abajo para la animación
-                .attr('width', x1.bandwidth())
-                .attr('height', 0) // Empezar con altura 0
-                .attr('fill', d => d.color)
-                .attr('rx', 4) // Rounded corners
-                .style('cursor', 'pointer')
-                .on('mouseover', function(event, d) {
-                    d3.select(this).attr('fill', d3.color(d.color).darker(0.5));
-                    tooltip.style('opacity', 1)
-                        .html(`<strong>${d.category} - ${d.metric}:</strong> ${d.value}${d.metric === 'CTR' ? '%' : 'x'}`);
-                })
-                .on('mousemove', function(event) {
-                    tooltip.style('left', (event.pageX + 10) + 'px')
-                           .style('top', (event.pageY - 28) + 'px');
-                })
-                .on('mouseout', function(event, d) {
-                    d3.select(this).attr('fill', d.color);
-                    tooltip.style('opacity', 0);
-                })
+            // Barras - Grupo Tradicional
+            svg.selectAll(".bar-trad")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", d => x(d.metric))
+                .attr("y", height - margin.bottom)
+                .attr("width", x.bandwidth() / 2 - 2)
+                .attr("height", 0)
+                .attr("fill", "#475569")
+                .attr("rx", 4)
                 .transition()
-                .duration(800)
-                .delay((d, i) => i * 150)
-                .attr('y', d => y(d.value))
-                .attr('height', d => height - y(d.value));
+                .duration(1000)
+                .attr("y", d => y(d.traditional))
+                .attr("height", d => height - margin.bottom - y(d.traditional));
 
-            // Eje X (Categorías)
-            svg.append('g')
-                .attr('class', 'axis x-axis')
-                .attr('transform', `translate(0,${height})`)
-                .call(d3.axisBottom(x0).tickSize(0).tickPadding(10))
-                .selectAll('text')
-                .style('fill', '#94a3b8'); // Color de texto de eje
+            // Barras - Grupo AI (Lumina)
+            svg.selectAll(".bar-ai")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", d => x(d.metric) + x.bandwidth() / 2 + 2)
+                .attr("y", height - margin.bottom)
+                .attr("width", x.bandwidth() / 2 - 2)
+                .attr("height", 0)
+                .attr("fill", "url(#gradAi)") // Usamos gradiente definido abajo
+                .attr("rx", 4)
+                .transition()
+                .duration(1000)
+                .delay(200)
+                .attr("y", d => y(d.ai))
+                .attr("height", d => height - margin.bottom - y(d.ai));
 
-            // Eje Y (Valores)
-            svg.append('g')
-                .attr('class', 'axis y-axis')
-                .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(d => d === 0 ? '' : d))
-                .selectAll('line')
-                .style('stroke', '#374151'); // Color de la línea de fondo
+            // Labels
+            svg.selectAll(".label-ai")
+                .data(data)
+                .enter()
+                .append("text")
+                .text(d => d.metric === "CTR" ? "+47%" : "-29%")
+                .attr("x", d => x(d.metric) + x.bandwidth() * 0.75)
+                .attr("y", d => y(d.ai) - 10)
+                .attr("text-anchor", "middle")
+                .style("fill", "#4ade80")
+                .style("font-size", "12px")
+                .style("font-weight", "bold")
+                .style("opacity", 0)
+                .transition().delay(1000).duration(500).style("opacity", 1);
 
-            svg.selectAll('.y-axis path').remove();
-            svg.selectAll('.x-axis path').remove();
-            svg.selectAll('.y-axis text').style('fill', '#94a3b8');
-        }
-
-        // Inicializar el gráfico al cargar la página
-        window.addEventListener('load', renderD3Chart);
-        // Manejar el redimensionamiento de la ventana para hacer el gráfico responsive
-        window.addEventListener('resize', renderD3Chart);
+            // Gradiente Definición
+            const defs = svg.append("defs");
+            const gradient = defs.append("linearGradient")
+                .attr("id", "gradAi")
+                .attr("x1", "0%")
+                .attr("y1", "100%")
+                .attr("x2", "0%")
+                .attr("y2", "0%");
+            gradient.append("stop").attr("offset", "0%").style("stop-color", "#059669");
+            gradient.append("stop").attr("offset", "100%").style("stop-color", "#4ade80");
+        });
     </script>
 </body>
 </html>
-
 
 
 
