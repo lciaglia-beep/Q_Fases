@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qantica | Fase 5: Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(18, 18, 20, 0.85);
+            --accent-yellow: #FACC15;
+            --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --text-primary: #F3F4F6;
+            --border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            /* Static background for performance */
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(250, 204, 21, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 0% 100%, rgba(139, 92, 246, 0.03) 0%, transparent 40%);
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .premium-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium-card:active {
+            transform: scale(0.98);
+        }
+
+        @media (hover: hover) {
+            .premium-card:hover {
+                border-color: rgba(250, 204, 21, 0.3);
+                transform: translateY(-2px);
+            }
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Tags & Badges */
+        .market-tag {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .tag-yellow { background: rgba(250, 204, 21, 0.1); color: var(--accent-yellow); border: 1px solid rgba(250, 204, 21, 0.2); }
+        .tag-green { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .tag-purple { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.2); }
+
+        /* Layout */
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-dashboard {
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+            .col-span-4 { grid-column: span 4; }
+            .col-span-6 { grid-column: span 6; }
+            .col-span-8 { grid-column: span 8; }
+            .col-span-12 { grid-column: span 12; }
+        }
+
+        /* 4 Quadrants Visual */
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        .quadrant {
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            flex-col: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            transition: background 0.3s;
+        }
+        .quadrant:hover { background: rgba(250, 204, 21, 0.05); }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Ticker Animation */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(250, 204, 21, 0.05);
+            border-bottom: 1px solid rgba(250, 204, 21, 0.1);
+            padding: 8px 0;
+            white-space: nowrap;
+        }
+        .ticker {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-size: 0.75rem;
+            color: #9CA3AF;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .ticker-value { color: var(--accent-yellow); margin-left: 5px; }
+        
+        /* Mobile Scroll Snap for Horizontal lists if needed */
+        .mobile-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .mobile-scroll::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20">
+
+    <!-- Top Ticker -->
+    <div class="ticker-wrap fade-in">
+        <div class="ticker">
+            <span class="ticker-item">MARKET STATUS: <span class="ticker-value">OPEN</span></span>
+            <span class="ticker-item">PREMIO REFERENCIA: <span class="ticker-value">€500,000</span></span>
+            <span class="ticker-item">PROYECTOS ACTIVOS: <span class="ticker-value">1,240</span></span>
+            <span class="ticker-item">VOTOS LEGÍTIMOS: <span class="ticker-value">98.9%</span></span>
+            <span class="ticker-item">BOLSA DE TRABAJO: <span class="text-green-400">HIRING</span></span>
+            <!-- Repeat for seamless loop -->
+             <span class="ticker-item">MARKET STATUS: <span class="ticker-value">OPEN</span></span>
+             <span class="ticker-item">PREMIO REFERENCIA: <span class="ticker-value">€500,000</span></span>
+        </div>
+    </div>
+
+    <div class="px-4 md:px-6 py-8">
+        <!-- Header -->
+        <header class="max-w-6xl mx-auto w-full mb-10 fade-in text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 mb-2 px-2 py-1 rounded bg-yellow-500/10 border border-yellow-500/20">
+                        <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span>
+                        <span class="mono text-[10px] text-yellow-500 uppercase tracking-widest">Marketplace Live</span>
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tight">
+                        Fase 5 <span class="text-gray-700 mx-2">/</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Oportunidades</span>
+                    </h1>
+                </div>
+                <div class="hidden md:block text-right">
+                    <p class="text-xs text-gray-500 mono uppercase mb-1">Volumen de Transacción</p>
+                    <p class="text-2xl text-white font-bold">ALTO</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="grid-dashboard fade-in" style="animation-delay: 0.1s;">
+
+            <!-- 1. HIGH STAKES: CONCURSOS (Main Featured) -->
+            <div class="premium-card col-span-12 md:col-span-8 p-6 md:p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Concurso Principal</h2>
+                        <p class="text-xs text-gray-400 mt-1">Temporada 2025 - Competición de Perfiles</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-[10px] text-gray-500 uppercase mono">Premio Referencia</span>
+                        <span class="block text-3xl font-bold text-yellow-400 tracking-tighter">€500k</span>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Categories -->
+                    <div class="space-y-4">
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex justify-between items-center cursor-pointer hover:bg-white/10 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-yellow-500/20 flex items-center justify-center text-yellow-500 text-lg">🎬</div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Mejor Película</h4>
+                                    <p class="text-[10px] text-gray-500">Largometrajes terminados</p>
+                                </div>
+                            </div>
+                            <span class="market-tag tag-green">OPEN</span>
+                        </div>
+                        
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex justify-between items-center cursor-pointer hover:bg-white/10 transition">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center text-purple-500 text-lg">📝</div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Mejor Guión</h4>
+                                    <p class="text-[10px] text-gray-500">Desarrollo & IP</p>
+                                </div>
+                            </div>
+                            <span class="market-tag tag-green">OPEN</span>
+                        </div>
+                    </div>
+
+                    <!-- 4 Quadrants Viz -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-[10px] text-gray-500 uppercase mono">Métricas de Impacto</span>
+                        </div>
+                        <div class="quadrant-grid">
+                            <div class="quadrant border-r border-b border-white/10">
+                                <span class="text-[10px] text-gray-400 uppercase mb-1">Crowdfunding</span>
+                                <span class="text-lg font-bold text-white">35%</span>
+                            </div>
+                            <div class="quadrant border-b border-white/10">
+                                <span class="text-[10px] text-gray-400 uppercase mb-1">Redes (Social)</span>
+                                <span class="text-lg font-bold text-white">25%</span>
+                            </div>
+                            <div class="quadrant border-r border-white/10">
+                                <span class="text-[10px] text-gray-400 uppercase mb-1">Competencia</span>
+                                <span class="text-lg font-bold text-white">20%</span>
+                            </div>
+                            <div class="quadrant">
+                                <span class="text-[10px] text-gray-400 uppercase mb-1">Mix (Híbrido)</span>
+                                <span class="text-lg font-bold text-white">20%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TABLÓN DE ANUNCIOS (Sidebar/Secondary) -->
+            <div class="premium-card col-span-12 md:col-span-4 p-6 flex flex-col h-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-white">Tablón de Mercado</h2>
+                    <span class="market-tag tag-yellow">LIVE FEED</span>
+                </div>
+
+                <div class="space-y-3 overflow-y-auto max-h-[300px] md:max-h-none pr-1 custom-scroll">
+                    <!-- Item 1: Venta -->
+                    <div class="p-3 bg-white/5 rounded border border-white/5 hover:border-white/20 transition cursor-pointer">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] text-blue-400 uppercase font-bold">Venta IP</span>
+                            <span class="text-[9px] text-gray-500 mono">Just Now</span>
+                        </div>
+                        <p class="text-xs text-gray-300">Catálogo de Películas Terminadas (Lote #4)</p>
+                    </div>
+
+                    <!-- Item 2: Transformación -->
+                    <div class="p-3 bg-white/5 rounded border border-white/5 hover:border-white/20 transition cursor-pointer">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] text-purple-400 uppercase font-bold">Remake / Reboot</span>
+                            <span class="text-[9px] text-gray-500 mono">2m ago</span>
+                        </div>
+                        <p class="text-xs text-gray-300">Oportunidad de transformación para IP clásica.</p>
+                    </div>
+
+                    <!-- Item 3: Bolsa de Trabajo -->
+                    <div class="p-3 bg-white/5 rounded border border-white/5 hover:border-white/20 transition cursor-pointer">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] text-green-400 uppercase font-bold">Bolsa de Trabajo</span>
+                            <span class="text-[9px] text-gray-500 mono">1h ago</span>
+                        </div>
+                        <p class="text-xs text-gray-300">Se buscan VFX Artists Senior para proyecto Sci-Fi.</p>
+                    </div>
+
+                    <!-- Item 4: Extras -->
+                    <div class="p-3 bg-white/5 rounded border border-white/5 hover:border-white/20 transition cursor-pointer border-l-2 border-l-yellow-500">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-[10px] text-yellow-500 uppercase font-bold">Call to Action</span>
+                            <span class="text-[9px] text-gray-500 mono">HOT</span>
+                        </div>
+                        <p class="text-xs text-gray-300">Convocatoria masiva de figurantes (Extras). ¡Participa!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. ESPACIO LÚDICO (Bottom Full Width) -->
+            <div class="premium-card col-span-12 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
+                <div class="w-full md:w-1/4 text-center md:text-left">
+                    <h3 class="text-white font-bold mb-1">Espacio Lúdico</h3>
+                    <p class="text-xs text-gray-400">Integración Gamificada</p>
+                </div>
+                <div class="w-full md:w-3/4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div class="text-2xl mb-1">🎮</div>
+                        <div class="text-[10px] text-gray-400 uppercase">Juegos</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div class="text-2xl mb-1">🧩</div>
+                        <div class="text-[10px] text-gray-400 uppercase">Puzzles</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div class="text-2xl mb-1">🗳️</div>
+                        <div class="text-[10px] text-gray-400 uppercase">Votación</div>
+                    </div>
+                    <div class="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <div class="text-2xl mb-1">🏆</div>
+                        <div class="text-[10px] text-gray-400 uppercase">Ranking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. SMART CONTRACT FOOTER -->
+            <div class="col-span-12 mt-4">
+                <div class="bg-black/30 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <div>
+                            <div class="text-xs text-white font-bold uppercase">Contrato Inteligente</div>
+                            <div class="text-[10px] text-gray-500 mono">Algoritmo de Votación Verificada</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 text-[10px] text-gray-500 mono">
+                        <span>● Legitimidad Asegurada</span>
+                        <span>● Trazabilidad -> Fase 6</span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

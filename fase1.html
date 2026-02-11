@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qantica | Fase 1: Egreso e Integración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 22, 0.7); /* Slightly more opaque for performance */
+            --modal-bg: #0a0a0c; /* Solid color fallback, overlay adds opacity */
+            --accent-yellow: #FACC15;
+            --accent-gold: #EAB308;
+            --text-primary: #F3F4F6;
+            --text-secondary: #9CA3AF;
+            --border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            /* Static background instead of complex gradients for better mobile performance */
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(250, 204, 21, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap box on mobile */
+        }
+
+        /* --- Rings Animation (Optimized for GPU) --- */
+        .orbit-ring {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            /* Hardware acceleration */
+            transform: translate3d(-50%, -50%, 0);
+            will-change: transform;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Reduced size slightly for mobile to prevent huge repaint areas */
+        .ring-1 { width: 140vw; height: 140vw; max-width: 600px; max-height: 600px; animation: spin 60s linear infinite; border-color: rgba(250, 204, 21, 0.05); }
+        .ring-2 { width: 180vw; height: 180vw; max-width: 900px; max-height: 900px; animation: spin 80s linear infinite reverse; }
+        .ring-3 { width: 220vw; height: 220vw; max-width: 1200px; max-height: 1200px; border: 1px dashed rgba(255, 255, 255, 0.02); }
+        
+        @keyframes spin { 
+            0% { transform: translate3d(-50%, -50%, 0) rotate(0deg); }
+            100% { transform: translate3d(-50%, -50%, 0) rotate(360deg); } 
+        }
+
+        /* --- Premium Card Styling --- */
+        .premium-card {
+            background: var(--card-bg);
+            /* Optimized blur: only applied if device supports it well */
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* Hover effects - Desktop only mostly */
+        @media (hover: hover) {
+            .premium-card:hover {
+                border-color: rgba(250, 204, 21, 0.4);
+                transform: translateY(-4px);
+                box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+            }
+        }
+        
+        /* Active state for Mobile touch feedback */
+        .premium-card:active {
+            transform: scale(0.98);
+            border-color: rgba(250, 204, 21, 0.4);
+        }
+
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* Interactive Hint */
+        .click-hint {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-yellow);
+            opacity: 0.7; /* Always visible on mobile to indicate interactivity */
+            transition: all 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            .click-hint { opacity: 0; transform: translateY(10px); }
+            .premium-card:hover .click-hint { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        h1, h2, h3 { letter-spacing: -0.02em; }
+        
+        .text-accent {
+            color: var(--accent-yellow);
+            /* Removed heavy text-shadow for performance */
+        }
+
+        /* Layout Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1.2fr 1fr;
+                gap: 24px;
+            }
+            .full-width { grid-column: span 2; }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.15s; }
+        .delay-3 { animation-delay: 0.2s; }
+        .delay-4 { animation-delay: 0.25s; }
+
+        /* Icons */
+        .icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 16px;
+            transition: color 0.3s ease, background 0.3s ease;
+        }
+        
+        .premium-card:hover .icon-box {
+            background: rgba(250, 204, 21, 0.1);
+            color: var(--accent-yellow);
+        }
+
+        /* Badge */
+        .badge {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.02);
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .badge-accent {
+            border-color: rgba(250, 204, 21, 0.3);
+            color: var(--accent-yellow);
+            background: rgba(250, 204, 21, 0.05);
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); /* Darker, no blur for performance if needed */
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Mobile: slide from bottom */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 0;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-overlay { align-items: center; padding: 20px; }
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--modal-bg);
+            width: 100%;
+            max-width: 900px;
+            height: 85vh; /* Mobile height */
+            max-height: 90vh;
+            overflow-y: auto;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 90%;
+                height: auto;
+                border-radius: 24px;
+                padding: 40px;
+                transform: translateY(20px) scale(0.95);
+            }
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close {
+            position: sticky;
+            top: 0;
+            right: 0;
+            float: right;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* List styling within modal */
+        .feature-list li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #9CA3AF;
+        }
+        .feature-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-yellow);
+        }
+        
+        /* Mobile Scrollbar hiding */
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col py-8 px-4 md:py-12 md:px-6 relative">
+
+    <!-- Background Orbits -->
+    <div class="orbit-ring ring-1"></div>
+    <div class="orbit-ring ring-2"></div>
+    <div class="orbit-ring ring-3"></div>
+
+    <!-- Header Section -->
+    <header class="text-center mb-8 md:mb-12 fade-in relative z-10">
+        <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-yellow-500/20 bg-yellow-500/5 backdrop-blur-md">
+            <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></span>
+            <span class="text-[10px] font-mono text-yellow-400 tracking-widest uppercase">Fase 01 Activa</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-3 md:mb-4 leading-tight">
+            Egreso e <span class="block md:inline text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Integración</span>
+        </h1>
+        <p class="text-sm md:text-lg text-gray-400 max-w-2xl mx-auto font-light leading-relaxed px-4">
+            Salida del Método. Recepción de Satélites y potenciación del Creador en el ecosistema.
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-grid relative z-10 pb-10">
+
+        <!-- ========================================== -->
+        <!-- COL 1: AREA SATÉLITES + INTRANET (CREADOR) -->
+        <!-- ========================================== -->
+        <div class="premium-card p-6 md:p-10 fade-in delay-1 flex flex-col justify-between h-full bg-gradient-to-br from-white/5 to-transparent">
+            <div>
+                <div class="flex justify-between items-start mb-6">
+                    <div class="badge badge-accent">Plataforma Central</div>
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-2">Intranet</h2>
+                <h3 class="text-xl md:text-2xl text-gray-400 font-light mb-6">Potenciar al <span class="text-accent font-medium">CREADOR</span></h3>
+                
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-400 leading-relaxed border-l-2 border-yellow-500/30 pl-4">
+                        Punto de conexión donde el talento converge. Herramientas diseñadas para maximizar el potencial creativo post-método.
+                    </p>
+                    <ul class="text-xs text-gray-500 space-y-2 font-mono mt-4">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-yellow-500 rounded-full"></span> Gestión de Proyecto
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1 h-1 bg-yellow-500 rounded-full"></span> Acceso a Herramientas
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Visual "Creator" element -->
+            <div class="mt-8 flex items-center gap-4 p-4 rounded-xl bg-black/40 border border-white/5">
+                <div class="relative">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-yellow-600 to-yellow-300 shadow-lg shadow-yellow-500/20 flex items-center justify-center text-black font-bold text-lg">C</div>
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 md:w-4 md:h-4 bg-green-500 border-2 border-black rounded-full"></div>
+                </div>
+                <div>
+                    <div class="text-sm text-white font-medium">Perfil Creador</div>
+                    <div class="text-xs text-gray-500">Estado: Integrado</div>
+                </div>
+            </div>
+            
+            <div class="click-hint md:opacity-0">No Interactivo</div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- COL 2: PROCESOS (ONBOARDING & ACTIVACIÓN)  -->
+        <!-- ========================================== -->
+        <div class="flex flex-col gap-5 md:gap-6">
+
+            <!-- Card: Onboarding (INTERACTIVE) -->
+            <div class="premium-card p-6 md:p-8 fade-in delay-2 group" onclick="openModal('modal-onboarding')">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="icon-box text-gray-300 group-hover:text-yellow-400 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                        </div>
+                        <h2 class="text-lg md:text-xl font-semibold text-white">Onboarding de Satélites</h2>
+                    </div>
+                    <span class="badge">PROCESO 01</span>
+                </div>
+                <div class="mt-4 pt-4 border-t border-white/5">
+                    <p class="text-gray-400 text-sm">
+                        Registro por fases y categorías. Haz clic para ver los perfiles satélite.
+                    </p>
+                </div>
+                <div class="click-hint">Clic para expandir</div>
+            </div>
+
+            <!-- Card: Activación & Evaluación (INTERACTIVE - EDÉN) -->
+            <div class="premium-card p-6 md:p-8 fade-in delay-3 relative overflow-hidden group" onclick="openModal('modal-eden')">
+                <!-- Hover Glow -->
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 md:w-40 md:h-40 bg-yellow-500/10 blur-3xl rounded-full group-hover:bg-yellow-500/20 transition-all duration-500"></div>
+
+                <div class="flex items-start justify-between relative z-10">
+                    <div>
+                        <div class="icon-box text-gray-300 group-hover:text-yellow-400 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h2 class="text-lg md:text-xl font-semibold text-white">Activación & Edén</h2>
+                    </div>
+                    <span class="badge">PROCESO 02</span>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-white/5 relative z-10">
+                    <p class="text-gray-400 text-sm mb-3">
+                        Red social creativa, concursos y vida en la plataforma.
+                    </p>
+                    <div class="inline-flex items-center gap-2 text-xs text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded border border-yellow-400/20">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        Ecosistema Interactivo
+                    </div>
+                </div>
+                <div class="click-hint">Explorar Edén</div>
+            </div>
+
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROW 2: CONTRATOS INTELIGENTES              -->
+        <!-- ========================================== -->
+        <div class="full-width fade-in delay-4 mt-4">
+            <h3 class="text-xs font-bold text-gray-500 tracking-[0.2em] uppercase mb-4 ml-1">Capa Legal & Tecnológica</h3>
+            
+            <div class="grid md:grid-cols-2 gap-4 md:gap-6">
+                
+                <!-- Contrato Nativo -->
+                <div class="premium-card p-6 flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-start group hover:bg-white/5 transition-colors">
+                    <div class="icon-box w-12 h-12 md:w-14 md:h-14 rounded-full bg-blue-500/10 border-blue-500/20 text-blue-400 shrink-0 mb-0">
+                        <!-- Shield Icon -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <div class="text-center md:text-left w-full">
+                        <div class="flex flex-col md:flex-row items-center gap-2 mb-2 md:justify-start justify-center">
+                            <h4 class="text-base md:text-lg font-semibold text-white">Contrato Nativo</h4>
+                            <span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Patente F1</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2">Independiente y seguro.</p>
+                        <p class="text-xs text-gray-500">Protege la autoría inicial del proyecto satélite desde el momento de su egreso.</p>
+                    </div>
+                </div>
+
+                <!-- Contrato Secundario -->
+                <div class="premium-card p-6 flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-start group hover:bg-white/5 transition-colors">
+                    <div class="icon-box w-12 h-12 md:w-14 md:h-14 rounded-full bg-purple-500/10 border-purple-500/20 text-purple-400 shrink-0 mb-0">
+                        <!-- Eye/Network Icon -->
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </div>
+                    <div class="text-center md:text-left w-full">
+                        <div class="flex flex-col md:flex-row items-center gap-2 mb-2 md:justify-start justify-center">
+                            <h4 class="text-base md:text-lg font-semibold text-white">Contrato Secundario</h4>
+                            <span class="text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Público</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-2">Trazabilidad y Crowdfunding.</p>
+                        <p class="text-xs text-gray-500">Visible para inversores y comunidad. Muestra el progreso del satélite.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Reflection -->
+    <footer class="mt-8 md:mt-16 text-center opacity-40 fade-in delay-4 pb-4">
+        <div class="h-px w-24 md:w-32 bg-gradient-to-r from-transparent via-gray-600 to-transparent mx-auto mb-4"></div>
+        <p class="text-[10px] uppercase tracking-widest text-gray-500">Qantica Ecosystem v1.0</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- MODALS (Hidden by default) -->
+    <!-- ========================================== -->
+
+    <!-- Modal 1: Onboarding (Perfil Satélite) -->
+    <div id="modal-onboarding" class="modal-overlay" onclick="closeModal(event, 'modal-onboarding')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            
+            <header class="mb-6 md:mb-8 border-b border-white/10 pb-4">
+                <div class="text-accent text-xs md:text-sm tracking-widest uppercase mb-2">Información Detallada</div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white">Perfil Satélite</h2>
+                <p class="text-sm md:text-base text-gray-400 mt-2">Usuarios que orbitan alrededor del creador principal. Ingreso paulatino por fases y categorías.</p>
+            </header>
+
+            <div class="space-y-6 md:space-y-8">
+                <!-- Section: Registro -->
+                <div class="bg-white/5 rounded-xl p-4 md:p-6 border border-white/5">
+                    <h3 class="text-lg md:text-xl text-white font-semibold mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-yellow-400 rounded-full"></span> Sistema de Registro
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                        Al ingresar, los Satélites completan un formulario y adjuntan material de respaldo (Portafolio). El sistema los clasifica mediante un <strong>Puntaje (Score)</strong>.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-black/40 p-3 rounded text-gray-300 border-l-2 border-yellow-500">
+                            <strong>Perfil Dinámico:</strong> Para usuarios con experiencia en múltiples áreas.
+                        </div>
+                        <div class="bg-black/40 p-3 rounded text-gray-300 border-l-2 border-yellow-500">
+                            <strong>Base de Datos:</strong> Disponible para "Call to Action" y notificaciones.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Categorías -->
+                <div>
+                    <h3 class="text-lg md:text-xl text-white font-semibold mb-6">Categorías por Fases</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Col 1 -->
+                        <div class="space-y-3">
+                            <div class="text-yellow-400 font-mono text-xs uppercase tracking-wider border-b border-yellow-400/20 pb-2 mb-3">1. Desarrollo</div>
+                            <p class="text-xs text-gray-500 mb-2 italic">Foco en el texto</p>
+                            <ul class="feature-list text-sm space-y-2">
+                                <li>Script Doctor</li>
+                                <li>Co-creadores (Guionistas)</li>
+                                <li>Analistas de guion</li>
+                            </ul>
+                        </div>
+
+                        <!-- Col 2 -->
+                        <div class="space-y-3">
+                            <div class="text-yellow-400 font-mono text-xs uppercase tracking-wider border-b border-yellow-400/20 pb-2 mb-3">2. Producción</div>
+                            <p class="text-xs text-gray-500 mb-2 italic">Materialización</p>
+                            <ul class="feature-list text-sm space-y-1">
+                                <li>Productores Ejecutivos</li>
+                                <li>Storyboards / Arte</li>
+                                <li>Fotografía / Dirección</li>
+                                <li>Sonido / Música</li>
+                                <li>Edición / VFX</li>
+                                <li>Actores (Casting votado)</li>
+                                <li>Analistas Videojuegos</li>
+                            </ul>
+                        </div>
+
+                        <!-- Col 3 -->
+                        <div class="space-y-3">
+                            <div class="text-yellow-400 font-mono text-xs uppercase tracking-wider border-b border-yellow-400/20 pb-2 mb-3">3. Distribución</div>
+                            <p class="text-xs text-gray-500 mb-2 italic">Mercado y Venta</p>
+                            <ul class="feature-list text-sm space-y-2">
+                                <li>Agentes de ventas</li>
+                                <li>Distribuidores</li>
+                                <li>Festivales Virtuales</li>
+                                <li>Marketing / Estreno</li>
+                                <li>Conexión Plataformas</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Activación (El Edén) -->
+    <div id="modal-eden" class="modal-overlay" onclick="closeModal(event, 'modal-eden')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            
+            <header class="mb-6 md:mb-8 border-b border-white/10 pb-4">
+                <div class="text-accent text-xs md:text-sm tracking-widest uppercase mb-2">Ecosistema Social</div>
+                <h2 class="text-2xl md:text-3xl font-bold text-white">El Edén</h2>
+                <p class="text-sm md:text-base text-gray-400 mt-2">Red social laboral, interactiva y creativa. Puntos de encuentro entre usuarios.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                
+                <!-- Feature 1 -->
+                <div class="bg-white/5 p-4 md:p-6 rounded-xl border border-white/5 hover:border-yellow-500/30 transition-colors">
+                    <div class="text-yellow-400 mb-3">
+                        <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+                    </div>
+                    <h3 class="text-base md:text-lg text-white font-semibold">Concursos & Crowdfunding</h3>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">Proyectos económicos y realizables. "Ventanas" para mostrarse, generar fandom y ampliar red de contactos.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white/5 p-4 md:p-6 rounded-xl border border-white/5 hover:border-yellow-500/30 transition-colors">
+                    <div class="text-yellow-400 mb-3">
+                        <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <h3 class="text-base md:text-lg text-white font-semibold">Conexión Externa (Vitrina)</h3>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">Enlaces a TikTok, Instagram, Twitch. Espacio privado pero con muestra a redes para generar Fandom.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white/5 p-4 md:p-6 rounded-xl border border-white/5 hover:border-yellow-500/30 transition-colors">
+                    <div class="text-yellow-400 mb-3">
+                        <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-base md:text-lg text-white font-semibold">Sala de Juegos & Torneos</h3>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">Área lúdica: Trivias de cine, rompecabezas. Torneos por equipos para fomentar la interacción.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white/5 p-4 md:p-6 rounded-xl border border-white/5 hover:border-yellow-500/30 transition-colors">
+                    <div class="text-yellow-400 mb-3">
+                        <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <h3 class="text-base md:text-lg text-white font-semibold">Clubes & Talleres</h3>
+                    <p class="text-gray-400 text-xs md:text-sm mt-2">Clubes de lectura, cinéfilos, coleccionistas NFT. Talleres virtuales y Escuela Virtual Qantica.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Script for Modals -->
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        }
+
+        function closeModal(event, modalId) {
+            if (event.target === event.currentTarget || event.target.classList.contains('modal-close')) {
+                document.getElementById(modalId).classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.body.style.overflow = '';
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeAllModals();
+            }
+        });
+    </script>
+
+</body>
+</html>

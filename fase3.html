@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qantica | Fase 3: Validación Algorítmica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(12, 12, 14, 0.85);
+            --accent-yellow: #FACC15;
+            --danger: #EF4444;
+            --success: #22C55E;
+            --text-primary: #F3F4F6;
+            --border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            /* Dot pattern background */
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(250, 204, 21, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            background-attachment: fixed;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- UI HUD Corners --- */
+        .hud-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-color: var(--accent-yellow);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        .top-left { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 4px; }
+        .top-right { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 4px; }
+        .bottom-left { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 4px; }
+        .bottom-right { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 4px; }
+
+        .premium-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            padding: 2px; /* For HUD corners offset */
+        }
+        
+        .card-inner {
+            padding: 24px;
+            height: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .premium-card:hover .hud-corner {
+            width: 25px;
+            height: 25px;
+            opacity: 1;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Animation: Scanning / Glitch */
+        .glitch-text {
+            position: relative;
+            animation: glitch 4s infinite alternate;
+        }
+        @keyframes glitch {
+            0% { opacity: 1; text-shadow: 2px 0 rgba(255,0,0,0.2), -2px 0 rgba(0,0,255,0.2); }
+            95% { opacity: 1; text-shadow: 2px 0 rgba(255,0,0,0.2), -2px 0 rgba(0,0,255,0.2); }
+            100% { opacity: 0.8; text-shadow: 4px 0 rgba(255,0,0,0.5), -4px 0 rgba(0,0,255,0.5); }
+        }
+
+        /* Funnel Progress Line */
+        .funnel-line {
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-yellow) 0%, transparent 100%);
+            width: 100%;
+            margin: 10px 0;
+            opacity: 0.5;
+        }
+
+        .grid-funnel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-funnel {
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+            .col-span-4 { grid-column: span 4; }
+            .col-span-8 { grid-column: span 8; }
+            .col-span-12 { grid-column: span 12; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .card-inner { padding: 20px; }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pt-12 px-4 md:px-6 pb-20">
+
+    <!-- Header HUD -->
+    <header class="max-w-4xl mx-auto text-center mb-10 md:mb-16 fade-in">
+        <div class="inline-block px-4 py-1 border border-yellow-500/30 rounded-sm bg-yellow-500/5 mb-4 md:mb-6">
+            <span class="mono text-[10px] text-yellow-500 tracking-widest uppercase flex items-center gap-2">
+                <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                Protocolo: El Juego
+            </span>
+        </div>
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+            Fase 3 <span class="text-gray-700 mx-2">/</span> <span class="glitch-text uppercase text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">Validación</span>
+        </h1>
+        <p class="text-gray-500 mono text-xs md:text-sm uppercase tracking-widest max-w-md mx-auto">Filtro de Viabilidad & KPIs de Gaming</p>
+    </header>
+
+    <main class="grid-funnel">
+
+        <!-- Card: The Bosses (Puzzle Brothers) -->
+        <div class="premium-card col-span-12 lg:col-span-4 fade-in" style="animation-delay: 0.1s;">
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+            
+            <div class="card-inner flex flex-col h-full justify-between">
+                <div class="mb-8">
+                    <span class="text-[10px] text-yellow-500 mono uppercase tracking-tighter border-b border-yellow-500/20 pb-1">Guardianes del Funnel</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mt-2 italic">PUZZLE BROTHERS</h2>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4 group">
+                        <div class="w-12 h-12 border border-white/10 flex items-center justify-center bg-white/5 group-hover:border-yellow-500/50 transition-colors shrink-0">
+                            <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium text-sm md:text-base">Pre-análisis</h4>
+                            <p class="text-[10px] text-gray-500 uppercase">Profesor de Videojuegos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 md:p-4 bg-white/[0.02] border border-white/5 rounded">
+                        <p class="text-xs text-gray-400 leading-relaxed italic">
+                            "Evaluación técnica de mecánicas. Determinamos qué se puede construir y qué se debe descartar antes de producción."
+                        </p>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <div class="text-[10px] text-gray-600 mono mb-2 uppercase tracking-widest text-right">Share to Devs</div>
+                        <div class="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-yellow-500 w-3/4 animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Case Study & KPIs (Bad Night) -->
+        <div class="premium-card col-span-12 lg:col-span-8 fade-in" style="animation-delay: 0.2s;">
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="card-inner">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-1 tracking-tighter">Bad Night</h2>
+                        <p class="text-xs text-gray-500 mono uppercase">Prueba de Estrés Algorítmico</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="px-2 py-1 bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] mono rounded">VERIFICADO</div>
+                        <div class="px-2 py-1 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] mono rounded">V.09</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Screening Logic -->
+                    <div class="space-y-6">
+                        <div class="border-l-2 border-yellow-500 pl-4">
+                            <h3 class="text-white font-semibold text-base md:text-lg mb-2">Filtro de Viabilidad</h3>
+                            <p class="text-xs md:text-sm text-gray-500 leading-relaxed">
+                                Si el proyecto no cumple con los KPIs del <span class="text-white font-bold">"Juego"</span>, se devuelve para iteración o se descarta.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-black/40 p-4 border border-white/5 rounded-lg space-y-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500 mono uppercase">Retención D1</span>
+                                <span class="text-green-500 mono font-bold">> 40%</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500 mono uppercase">Mecánica Viral</span>
+                                <span class="text-yellow-500 mono font-bold">P-SCORE: 8.5</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-500 mono uppercase">Escalabilidad</span>
+                                <span class="text-green-500 mono font-bold">ALTA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual HUD Element -->
+                    <div class="relative h-48 md:h-auto bg-gradient-to-t from-yellow-500/5 to-transparent border border-white/5 rounded-xl overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, var(--accent-yellow) 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        <div class="text-center relative z-10">
+                            <div class="text-[10px] text-yellow-500 mono mb-2 animate-pulse uppercase">Algoritmo de Selección</div>
+                            <div class="text-4xl md:text-5xl font-black text-white italic tracking-tighter">QUALIFIED</div>
+                            <div class="funnel-line mt-4"></div>
+                            <div class="text-[10px] text-gray-600 mono mt-2 tracking-[0.2em]">PROCEED TO PRODUCTION</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Contrato Inteligente (Integrated) -->
+        <div class="premium-card col-span-12 fade-in" style="animation-delay: 0.3s;">
+             <div class="hud-corner bottom-left"></div>
+             <div class="hud-corner bottom-right"></div>
+             
+             <div class="card-inner flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                <div class="flex items-center gap-4 shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-sm md:text-base">Contrato Inteligente</h3>
+                        <p class="text-[10px] text-gray-500 mono uppercase">Registro Inmutable</p>
+                    </div>
+                </div>
+
+                <div class="h-px w-full md:w-px md:h-10 bg-white/10"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full text-xs">
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+                        Registra huella del escritor y evolución.
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+                        Promovido por desarrolladores.
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+                        Garantiza trazabilidad y legitimidad.
+                    </div>
+                </div>
+             </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Info -->
+    <footer class="mt-12 max-w-7xl mx-auto w-full px-4 text-center md:text-left md:px-10 fade-in opacity-40" style="animation-delay: 0.4s;">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="mono text-[10px] text-gray-600 uppercase">
+                Data Source: Ludic Analysis Node
+            </div>
+            <div class="mono text-[10px] text-gray-700">
+                QANTICA CORE © 2025
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

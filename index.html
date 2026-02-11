@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qantica | Nexus Core</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #020202;
+            --card-bg: rgba(20, 20, 25, 0.4);
+            --accent-yellow: #FACC15;
+            --text-primary: #F3F4F6;
+            --border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* Static gradient backup */
+            background: radial-gradient(circle at center, #111 0%, #000000 100%);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- CANVAS BACKGROUND --- */
+        #constellation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- THE CORE (LOGO AREA) --- */
+        .core-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0 2rem 0; /* Reduced padding for tighter layout */
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Massive Logo Sizing */
+        .logo-img {
+            height: 100px; /* Mobile Size */
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(250, 204, 21, 0.3));
+            transition: all 0.5s ease;
+            animation: breathe 5s infinite ease-in-out;
+        }
+
+        @media (min-width: 768px) {
+            .logo-img { height: 180px; } /* Desktop Size */
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(250, 204, 21, 0.3)); }
+            50% { transform: scale(1.02); filter: drop-shadow(0 0 50px rgba(250, 204, 21, 0.5)); }
+        }
+
+        /* --- PHASE GRID --- */
+        .grid-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center; /* Vertically center the grid if space allows */
+            padding-bottom: 2rem;
+        }
+
+        .phase-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 1100px; /* Slightly tighter width */
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .phase-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        }
+        @media (min-width: 1024px) {
+            .phase-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        }
+
+        /* --- PHASE CARD --- */
+        .phase-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-light);
+            border-radius: 16px; /* Slightly sharper corners */
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px; /* More compact height */
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(250, 204, 21, 0.5);
+            box-shadow: 0 15px 40px -10px rgba(250, 204, 21, 0.15);
+            background: rgba(30, 30, 35, 0.8);
+        }
+
+        /* Tech accent line */
+        .phase-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 2px;
+            background: var(--accent-yellow);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+        .phase-card:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .phase-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            position: absolute;
+            top: -10px; right: 10px;
+            line-height: 1;
+            transition: all 0.3s;
+            z-index: 0;
+        }
+        .phase-card:hover .phase-number {
+            color: rgba(250, 204, 21, 0.15);
+            transform: translateX(-5px);
+        }
+
+        .card-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+
+        .icon-box {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: auto;
+            color: #9CA3AF;
+            transition: 0.3s;
+        }
+        .phase-card:hover .icon-box {
+            background: var(--accent-yellow);
+            color: black;
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+        }
+
+        .phase-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+            transition: color 0.3s;
+        }
+        .phase-card:hover .phase-title { color: var(--accent-yellow); }
+
+        .phase-subtitle {
+            font-size: 0.7rem;
+            color: #6B7280;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .arrow-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #6B7280;
+            margin-top: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        .phase-card:hover .arrow-link { 
+            color: white; 
+            gap: 10px; 
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* --- FADE IN --- */
+        .fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.15s; }
+        .delay-3 { animation-delay: 0.2s; }
+        .delay-4 { animation-delay: 0.25s; }
+        .delay-5 { animation-delay: 0.3s; }
+        .delay-6 { animation-delay: 0.35s; }
+
+    </style>
+</head>
+<body>
+
+    <!-- DYNAMIC BACKGROUND -->
+    <canvas id="constellation"></canvas>
+
+    <!-- CORE SYSTEM -->
+    <div class="core-wrapper fade-in-up">
+        <div class="logo-container">
+            <!-- Ensure QANTICALOGO.png is in the same folder -->
+            <img src="QANTICALOGO.png" alt="QANTICA" class="logo-img" onerror="this.style.display='none'; document.getElementById('text-fallback').style.display='block';">
+            <!-- Text Fallback -->
+            <h1 id="text-fallback" class="text-6xl md:text-9xl font-black text-white tracking-tighter hidden" style="text-shadow: 0 0 40px rgba(250,204,21,0.3);">QANTICA</h1>
+            
+            <div class="mt-6 flex flex-col items-center">
+                <div class="flex items-center gap-3 bg-white/5 backdrop-blur-sm px-4 py-1.5 rounded border border-white/10">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+                    <span class="text-[10px] md:text-xs mono text-gray-400 tracking-[0.3em] uppercase">System Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION GRID -->
+    <div class="grid-container">
+        <main class="phase-grid">
+
+            <!-- 01 -->
+            <a href="fase1.html" class="phase-card fade-in-up delay-1">
+                <div class="phase-number">01</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Satélites</h3>
+                        <p class="phase-subtitle">Egreso e Integración</p>
+                        <div class="arrow-link">Iniciar <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 02 -->
+            <a href="fase2.html" class="phase-card fade-in-up delay-2">
+                <div class="phase-number">02</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Enigma</h3>
+                        <p class="phase-subtitle">Algoritmo & Data</p>
+                        <div class="arrow-link">Acceder <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 03 -->
+            <a href="fase3.html" class="phase-card fade-in-up delay-3">
+                <div class="phase-number">03</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Validación</h3>
+                        <p class="phase-subtitle">El Juego</p>
+                        <div class="arrow-link">Jugar <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 04 -->
+            <a href="fase4.html" class="phase-card fade-in-up delay-4">
+                <div class="phase-number">04</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Pre-Producción</h3>
+                        <p class="phase-subtitle">Data Center</p>
+                        <div class="arrow-link">Gestionar <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 05 -->
+            <a href="fase5.html" class="phase-card fade-in-up delay-5">
+                <div class="phase-number">05</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Marketplace</h3>
+                        <p class="phase-subtitle">Oportunidades</p>
+                        <div class="arrow-link">Explorar <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 06 -->
+            <a href="fase6.html" class="phase-card fade-in-up delay-6">
+                <div class="phase-number">06</div>
+                <div class="card-content">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <div class="mt-auto">
+                        <h3 class="phase-title">Logística</h3>
+                        <p class="phase-subtitle">Centro de Despacho</p>
+                        <div class="arrow-link">Despachar <span class="text-yellow-500">→</span></div>
+                    </div>
+                </div>
+            </a>
+
+        </main>
+    </div>
+
+    <!-- JS: PARTICLES EFFECT (NODES) -->
+    <script>
+        const canvas = document.getElementById('constellation');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let stars = [];
+
+        function init() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            stars = [];
+            
+            // Adjust density for mobile vs desktop
+            const numStars = width < 768 ? 40 : 90;
+            
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.2, // Slower movement
+                    vy: (Math.random() - 0.5) * 0.2,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.5 + 0.2 // Variable opacity
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw lines connecting close particles
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1;
+            
+            // Optimization: limit line checks on mobile could be added here if needed, but current count is low
+            for (let i = 0; i < stars.length; i++) {
+                for (let j = i + 1; j < stars.length; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Connection distance
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(stars[j].x, stars[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw and move stars
+            stars.forEach(star => {
+                star.x += star.vx;
+                star.y += star.vy;
+
+                // Bounce off edges (keep them in frame)
+                if (star.x < 0 || star.x > width) star.vx *= -1;
+                if (star.y < 0 || star.y > height) star.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(250, 204, 21, ${star.alpha})`; // Gold particles
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        animate();
+    </script>
+
+</body>
+</html>

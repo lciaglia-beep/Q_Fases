@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Qantica | Fase 6: Centro Logístico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(18, 18, 20, 0.9);
+            --accent-yellow: #FACC15;
+            --accent-green: #10B981;
+            --text-primary: #F3F4F6;
+            --border-light: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            /* Industrial floor pattern */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .premium-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            z-index: 10;
+        }
+
+        .premium-card:active {
+            transform: scale(0.98);
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- GLOBAL CONVEYOR BELT SYSTEM (Background) --- */
+        .logistics-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .track {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        /* Horizontal Tracks */
+        .track-h-1 { top: 15%; left: -10%; width: 120%; height: 40px; transform: rotate(2deg); }
+        .track-h-2 { top: 50%; left: -10%; width: 120%; height: 40px; transform: rotate(-1deg); }
+        .track-h-3 { top: 85%; left: -10%; width: 120%; height: 40px; transform: rotate(1deg); }
+
+        /* Moving Crates Animation */
+        .crate {
+            position: absolute;
+            width: 24px;
+            height: 16px;
+            background: #FACC15;
+            border: 1px solid #9ca3af;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            opacity: 0.6;
+        }
+        
+        .crate::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border: 1px dashed rgba(0,0,0,0.3);
+        }
+
+        /* Animations for tracks */
+        .move-right { animation: moveRight 15s linear infinite; }
+        .move-left { animation: moveLeft 20s linear infinite; }
+        
+        @keyframes moveRight { from { left: -10%; } to { left: 110%; } }
+        @keyframes moveLeft { from { left: 110%; } to { left: -10%; } }
+
+        /* --- ACTIVE DISPATCH ANIMATION --- */
+        .dispatch-crate {
+            position: fixed;
+            width: 40px;
+            height: 30px;
+            background: #FACC15;
+            border: 2px solid #fff;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: black;
+            border-radius: 4px;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.8);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 0;
+        }
+
+        /* --- LAYOUT --- */
+        .grid-logistics {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-logistics {
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+            .col-span-4 { grid-column: span 4; }
+            .col-span-6 { grid-column: span 6; }
+            .col-span-8 { grid-column: span 8; }
+            .col-span-12 { grid-column: span 12; }
+        }
+
+        /* Fade In */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Greenlight Pulse */
+        .greenlight-btn {
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .greenlight-btn:active {
+            transform: scale(0.95);
+        }
+        .greenlight-pulse {
+            animation: pulseGreen 2s infinite;
+        }
+        @keyframes pulseGreen {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        .dock-active {
+            border-color: #FACC15 !important;
+            background: rgba(250, 204, 21, 0.1) !important;
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 pt-10 px-4 md:px-6">
+
+    <!-- BACKGROUND LOGISTICS LAYER (The Factory) -->
+    <div class="logistics-layer">
+        <!-- Track 1 (Top) -->
+        <div class="track track-h-1 flex items-center">
+            <div class="crate move-right" style="animation-delay: 0s;"></div>
+            <div class="crate move-right" style="animation-delay: 4s;"></div>
+            <div class="crate move-right" style="animation-delay: 8s;"></div>
+        </div>
+        <!-- Track 2 (Middle) -->
+        <div class="track track-h-2 flex items-center justify-end">
+            <div class="crate move-left" style="animation-delay: 2s; background: #333; border-color: #555;"></div>
+            <div class="crate move-left" style="animation-delay: 7s;"></div>
+            <div class="crate move-left" style="animation-delay: 12s; background: #333; border-color: #555;"></div>
+        </div>
+        <!-- Track 3 (Bottom) -->
+        <div class="track track-h-3 flex items-center">
+            <div class="crate move-right" style="animation-delay: 1s;"></div>
+            <div class="crate move-right" style="animation-delay: 6s; background: #10B981; border-color: #fff;"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto w-full mb-10 text-center fade-in relative z-20">
+        <div class="inline-flex items-center gap-2 mb-2 px-3 py-1 bg-white/5 rounded border border-white/10 backdrop-blur-md">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="mono text-[10px] text-gray-400 uppercase tracking-widest">Sistemas Operativos</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-2 tracking-tight">
+            Fase 6 <span class="text-gray-700 mx-2">/</span> <span class="text-yellow-500">Centro Logístico</span>
+        </h1>
+        <p class="text-sm text-gray-500 mono uppercase tracking-wider">Despacho Final & Greenlight</p>
+    </header>
+
+    <main class="grid-logistics fade-in" style="animation-delay: 0.1s;">
+
+        <!-- 1. GREENLIGHT CORE (Central Hub - CLICKABLE) -->
+        <div class="premium-card col-span-12 p-8 md:p-10 flex flex-col items-center justify-center text-center relative border-green-500/30">
+            <div class="absolute inset-0 bg-green-500/5 z-0"></div>
+            
+            <div class="relative z-10 flex flex-col items-center">
+                <!-- Interactive Button -->
+                <button id="btn-greenlight" onclick="despacharTodo()" class="greenlight-btn w-24 h-24 rounded-full bg-green-500 text-black flex items-center justify-center text-3xl font-bold mb-4 greenlight-pulse shadow-[0_0_30px_rgba(16,185,129,0.5)] border-4 border-green-400 hover:bg-green-400">
+                    GO
+                </button>
+                
+                <h2 class="text-2xl font-bold text-white mb-1">GREENLIGHT CONFIRMADO</h2>
+                <p class="text-xs text-gray-400 mono uppercase mb-6">Click para despachar orden final</p>
+                
+                <div class="flex flex-wrap justify-center gap-4">
+                    <div class="bg-black/40 px-4 py-2 rounded border border-green-500/20 flex items-center gap-2">
+                        <span class="text-green-500 text-xs">●</span>
+                        <span class="text-xs text-white mono">Legitimidad OK</span>
+                    </div>
+                    <div class="bg-black/40 px-4 py-2 rounded border border-green-500/20 flex items-center gap-2">
+                        <span class="text-green-500 text-xs">●</span>
+                        <span class="text-xs text-white mono">Trazabilidad OK</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SISTEMA BIDIRECCIONAL (Data Feedback) -->
+        <div class="premium-card col-span-12 md:col-span-4 p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    <h3 class="text-lg font-bold text-white">Sistema Bidireccional</h3>
+                </div>
+                <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+                    La audiencia influye en tiempo real sobre el destino del "paquete".
+                </p>
+            </div>
+            
+            <div class="bg-white/5 p-3 rounded border border-white/10 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-400">Decisión Producción</span>
+                    <span class="text-yellow-500 mono font-bold">92%</span>
+                </div>
+                <div class="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-yellow-500 w-[92%]"></div>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-gray-400">Canal Elegido</span>
+                    <span class="text-white mono">Streaming</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. LOGISTICS ROUTING (Destinations - TARGETS) -->
+        <div class="premium-card col-span-12 md:col-span-8 p-6">
+            <div class="flex justify-between items-end mb-6">
+                <h3 class="text-lg font-bold text-white">Rutas de Distribución</h3>
+                <span class="text-[10px] text-gray-500 mono uppercase animate-pulse text-yellow-500">Esperando Carga...</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Route 1 -->
+                <div id="dock-1" onclick="despacharUnico('dock-1')" class="bg-black/20 p-4 rounded border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-yellow-500/0 group-hover:bg-yellow-500/5 transition-colors"></div>
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="text-2xl">⚖️</div>
+                        <div>
+                            <div class="text-sm text-white font-medium">Licitación</div>
+                            <div class="text-[10px] text-gray-500">Casas Productoras</div>
+                        </div>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors"></span>
+                </div>
+
+                <!-- Route 2 -->
+                <div id="dock-2" onclick="despacharUnico('dock-2')" class="bg-black/20 p-4 rounded border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/5 transition-colors"></div>
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="text-2xl">🌐</div>
+                        <div>
+                            <div class="text-sm text-white font-medium">Redes / YouTube</div>
+                            <div class="text-[10px] text-gray-500">Direct-to-Consumer</div>
+                        </div>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-gray-600 group-hover:bg-green-500 transition-colors"></span>
+                </div>
+
+                <!-- Route 3 -->
+                <div id="dock-3" onclick="despacharUnico('dock-3')" class="bg-black/20 p-4 rounded border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/5 transition-colors"></div>
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="text-2xl">🏆</div>
+                        <div>
+                            <div class="text-sm text-white font-medium">Festivales</div>
+                            <div class="text-[10px] text-gray-500">Circuito Prestigio</div>
+                        </div>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-gray-600 group-hover:bg-purple-500 transition-colors"></span>
+                </div>
+
+                <!-- Route 4 -->
+                <div id="dock-4" onclick="despacharUnico('dock-4')" class="bg-black/20 p-4 rounded border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/5 transition-colors"></div>
+                    <div class="flex items-center gap-3 relative z-10">
+                        <div class="text-2xl">🎮</div>
+                        <div>
+                            <div class="text-sm text-white font-medium">Plataforma Juegos</div>
+                            <div class="text-[10px] text-gray-500">Integración Lúdica</div>
+                        </div>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-gray-600 group-hover:bg-blue-500 transition-colors"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. PRODUCTION ALERT (Bottom) -->
+        <div class="col-span-12 mt-6 relative z-20">
+            <div class="bg-yellow-500 text-black p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_0_30px_rgba(250,204,21,0.2)] transform hover:scale-[1.01] transition-transform cursor-default">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-xl animate-bounce">⚠️</div>
+                    <div>
+                        <h4 class="font-bold uppercase tracking-tight">Área de Producción Reactivada</h4>
+                        <p class="text-xs font-medium opacity-80">El proyecto ha salido del entorno digital. Inicia fase física.</p>
+                    </div>
+                </div>
+                <div class="mono text-xs bg-black text-yellow-500 px-3 py-2 rounded font-bold uppercase tracking-widest whitespace-nowrap">
+                    EXECUTE ORDER 66
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-auto pt-10 text-center opacity-30 fade-in relative z-20" style="animation-delay: 0.2s;">
+        <p class="text-[10px] mono tracking-[0.3em] text-gray-500">QANTICA LOGISTICS // END OF LINE</p>
+    </footer>
+
+    <!-- LOGIC FOR DISPATCH ANIMATION -->
+    <script>
+        function createCrate(startX, startY) {
+            const crate = document.createElement('div');
+            crate.className = 'dispatch-crate';
+            crate.innerText = 'IP';
+            crate.style.left = startX + 'px';
+            crate.style.top = startY + 'px';
+            document.body.appendChild(crate);
+            return crate;
+        }
+
+        function animateCrateToElement(elementId, delay = 0) {
+            const btn = document.getElementById('btn-greenlight');
+            const target = document.getElementById(elementId);
+            
+            if(!btn || !target) return;
+
+            const startRect = btn.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+
+            // Center points
+            const startX = startRect.left + startRect.width / 2 - 20; // 20 is half crate width
+            const startY = startRect.top + startRect.height / 2 - 15;
+
+            const endX = targetRect.left + targetRect.width / 2 - 20;
+            const endY = targetRect.top + targetRect.height / 2 - 15;
+
+            setTimeout(() => {
+                const crate = createCrate(startX, startY);
+                
+                // Trigger animation next frame
+                requestAnimationFrame(() => {
+                    crate.style.opacity = '1';
+                    crate.style.transform = `translate(${endX - startX}px, ${endY - startY}px) rotate(360deg)`;
+                });
+
+                // Highlight dock on arrival
+                setTimeout(() => {
+                    target.classList.add('dock-active');
+                    setTimeout(() => target.classList.remove('dock-active'), 300);
+                    crate.remove();
+                }, 1000); // 1s matches transition time in CSS
+            }, delay);
+        }
+
+        function despacharTodo() {
+            // Animate button click visual
+            const btn = document.getElementById('btn-greenlight');
+            btn.style.transform = "scale(0.9)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+
+            // Send to all docks with slight delays
+            animateCrateToElement('dock-1', 0);
+            animateCrateToElement('dock-2', 200);
+            animateCrateToElement('dock-3', 400);
+            animateCrateToElement('dock-4', 600);
+        }
+
+        function despacharUnico(dockId) {
+            animateCrateToElement(dockId);
+        }
+    </script>
+
+</body>
+</html>
