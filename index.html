@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Qantica | Nexus Core</title>
+    <title>Qantica | Nexus Core | Access Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -11,6 +11,7 @@
             --bg-color: #020202;
             --card-bg: rgba(20, 20, 25, 0.4);
             --accent-yellow: #FACC15;
+            --accent-red: #ef4444;
             --text-primary: #F3F4F6;
             --border-light: rgba(255, 255, 255, 0.08);
         }
@@ -19,18 +20,131 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
-            overflow-x: hidden;
+            overflow: hidden; /* Prevent scroll until logged in */
             margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            /* Static gradient backup */
             background: radial-gradient(circle at center, #111 0%, #000000 100%);
         }
 
         .mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* --- CANVAS BACKGROUND --- */
+        /* --- LOGIN OVERLAY --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .login-box {
+            width: 90%;
+            max-width: 400px;
+            padding: 40px;
+            border: 1px solid var(--border-light);
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        /* Decorative corners for login box */
+        .login-box::before, .login-box::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            border: 2px solid var(--accent-yellow);
+            transition: 0.3s;
+        }
+        .login-box::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+        .login-box::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .login-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: var(--accent-yellow);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            padding: 10px 0;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .login-input:focus {
+            border-bottom-color: var(--accent-yellow);
+            box-shadow: 0 10px 20px -10px rgba(250, 204, 21, 0.1);
+        }
+
+        .login-input::placeholder { color: #444; text-transform: uppercase; font-size: 0.8rem; }
+
+        .btn-access {
+            background: rgba(250, 204, 21, 0.1);
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+            padding: 12px 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-access:hover {
+            background: var(--accent-yellow);
+            color: #000;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+        }
+
+        .error-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: var(--accent-red) !important;
+        }
+        .error-text { color: var(--accent-red) !important; }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* --- MAIN SYSTEM BLUR --- */
+        #main-system {
+            transition: filter 1s ease, opacity 1s ease;
+            filter: blur(15px) brightness(0.2);
+            opacity: 0.5;
+            pointer-events: none;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .system-unlocked {
+            filter: blur(0) brightness(1) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        /* --- EXISTING STYLES --- */
         #constellation {
             position: fixed;
             top: 0; left: 0;
@@ -39,13 +153,12 @@
             pointer-events: none;
         }
 
-        /* --- THE CORE (LOGO AREA) --- */
         .core-wrapper {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2rem 0 2rem 0; /* Reduced padding for tighter layout */
+            padding: 2rem 0 2rem 0;
             z-index: 10;
             flex-shrink: 0;
         }
@@ -58,9 +171,8 @@
             align-items: center;
         }
 
-        /* Massive Logo Sizing */
         .logo-img {
-            height: 100px; /* Mobile Size */
+            height: 100px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 0 30px rgba(250, 204, 21, 0.3));
@@ -69,7 +181,7 @@
         }
 
         @media (min-width: 768px) {
-            .logo-img { height: 180px; } /* Desktop Size */
+            .logo-img { height: 180px; }
         }
 
         @keyframes breathe {
@@ -77,11 +189,10 @@
             50% { transform: scale(1.02); filter: drop-shadow(0 0 50px rgba(250, 204, 21, 0.5)); }
         }
 
-        /* --- PHASE GRID --- */
         .grid-container {
             flex-grow: 1;
             display: flex;
-            align-items: center; /* Vertically center the grid if space allows */
+            align-items: center;
             padding-bottom: 2rem;
         }
 
@@ -89,7 +200,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
-            max-width: 1100px; /* Slightly tighter width */
+            max-width: 1100px;
             width: 100%;
             margin: 0 auto;
             padding: 0 20px;
@@ -104,13 +215,12 @@
             .phase-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
         }
 
-        /* --- PHASE CARD --- */
         .phase-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-light);
-            border-radius: 16px; /* Slightly sharper corners */
+            border-radius: 16px;
             padding: 20px;
             position: relative;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -118,7 +228,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 180px; /* More compact height */
+            min-height: 180px;
             text-decoration: none;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
@@ -130,7 +240,6 @@
             background: rgba(30, 30, 35, 0.8);
         }
 
-        /* Tech accent line */
         .phase-card::after {
             content: '';
             position: absolute;
@@ -236,125 +345,197 @@
 </head>
 <body>
 
-    <!-- DYNAMIC BACKGROUND -->
-    <canvas id="constellation"></canvas>
-
-    <!-- CORE SYSTEM -->
-    <div class="core-wrapper fade-in-up">
-        <div class="logo-container">
-            <!-- Ensure QANTICALOGO.png is in the same folder -->
-            <img src="QANTICALOGO.png" alt="QANTICA" class="logo-img" onerror="this.style.display='none'; document.getElementById('text-fallback').style.display='block';">
-            <!-- Text Fallback -->
-            <h1 id="text-fallback" class="text-6xl md:text-9xl font-black text-white tracking-tighter hidden" style="text-shadow: 0 0 40px rgba(250,204,21,0.3);">QANTICA</h1>
-            
-            <div class="mt-6 flex flex-col items-center">
-                <div class="flex items-center gap-3 bg-white/5 backdrop-blur-sm px-4 py-1.5 rounded border border-white/10">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></span>
-                    <span class="text-[10px] md:text-xs mono text-gray-400 tracking-[0.3em] uppercase">System Online</span>
-                </div>
+    <!-- LOGIN SCREEN -->
+    <div id="login-overlay">
+        <div class="login-box" id="loginBox">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-white tracking-widest mb-1">QANTICA</h2>
+                <p class="mono text-xs text-gray-500">SECURE ACCESS GATEWAY</p>
             </div>
+            
+            <div class="input-group">
+                <input type="text" id="username" class="login-input" placeholder="USERNAME" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" class="login-input" placeholder="PASSWORD">
+            </div>
+
+            <button onclick="attemptLogin()" class="btn-access">DECRYPT & ENTER</button>
+            <p id="status-msg" class="mono text-[10px] text-gray-600 mt-4 h-4">WAITING FOR CREDENTIALS...</p>
         </div>
     </div>
 
-    <!-- NAVIGATION GRID -->
-    <div class="grid-container">
-        <main class="phase-grid">
+    <!-- MAIN SYSTEM CONTENT (BLURRED INITIALLY) -->
+    <div id="main-system">
+        
+        <!-- DYNAMIC BACKGROUND -->
+        <canvas id="constellation"></canvas>
 
-            <!-- 01 -->
-            <a href="fase1.html" class="phase-card fade-in-up delay-1">
-                <div class="phase-number">01</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Satélites</h3>
-                        <p class="phase-subtitle">Egreso e Integración</p>
-                        <div class="arrow-link">Iniciar <span class="text-yellow-500">→</span></div>
+        <!-- CORE SYSTEM -->
+        <div class="core-wrapper fade-in-up">
+            <div class="logo-container">
+                <img src="QANTICALOGO.png" alt="QANTICA" class="logo-img" onerror="this.style.display='none'; document.getElementById('text-fallback').style.display='block';">
+                <h1 id="text-fallback" class="text-6xl md:text-9xl font-black text-white tracking-tighter hidden" style="text-shadow: 0 0 40px rgba(250,204,21,0.3);">QANTICA</h1>
+                
+                <div class="mt-6 flex flex-col items-center">
+                    <div class="flex items-center gap-3 bg-white/5 backdrop-blur-sm px-4 py-1.5 rounded border border-white/10">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></span>
+                        <span class="text-[10px] md:text-xs mono text-gray-400 tracking-[0.3em] uppercase">System Online</span>
                     </div>
                 </div>
-            </a>
+            </div>
+        </div>
 
-            <!-- 02 -->
-            <a href="fase2.html" class="phase-card fade-in-up delay-2">
-                <div class="phase-number">02</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Enigma</h3>
-                        <p class="phase-subtitle">Algoritmo & Data</p>
-                        <div class="arrow-link">Acceder <span class="text-yellow-500">→</span></div>
-                    </div>
-                </div>
-            </a>
+        <!-- NAVIGATION GRID -->
+        <div class="grid-container">
+            <main class="phase-grid">
 
-            <!-- 03 -->
-            <a href="fase3.html" class="phase-card fade-in-up delay-3">
-                <div class="phase-number">03</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <!-- 01 -->
+                <a href="fase1.html" class="phase-card fade-in-up delay-1">
+                    <div class="phase-number">01</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Satélites</h3>
+                            <p class="phase-subtitle">Egreso e Integración</p>
+                            <div class="arrow-link">Iniciar <span class="text-yellow-500">→</span></div>
+                        </div>
                     </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Validación</h3>
-                        <p class="phase-subtitle">El Juego</p>
-                        <div class="arrow-link">Jugar <span class="text-yellow-500">→</span></div>
-                    </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 04 -->
-            <a href="fase4.html" class="phase-card fade-in-up delay-4">
-                <div class="phase-number">04</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <!-- 02 -->
+                <a href="fase2.html" class="phase-card fade-in-up delay-2">
+                    <div class="phase-number">02</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Enigma</h3>
+                            <p class="phase-subtitle">Algoritmo & Data</p>
+                            <div class="arrow-link">Acceder <span class="text-yellow-500">→</span></div>
+                        </div>
                     </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Pre-Producción</h3>
-                        <p class="phase-subtitle">Data Center</p>
-                        <div class="arrow-link">Gestionar <span class="text-yellow-500">→</span></div>
-                    </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 05 -->
-            <a href="fase5.html" class="phase-card fade-in-up delay-5">
-                <div class="phase-number">05</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <!-- 03 -->
+                <a href="fase3.html" class="phase-card fade-in-up delay-3">
+                    <div class="phase-number">03</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Validación</h3>
+                            <p class="phase-subtitle">El Juego</p>
+                            <div class="arrow-link">Jugar <span class="text-yellow-500">→</span></div>
+                        </div>
                     </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Marketplace</h3>
-                        <p class="phase-subtitle">Oportunidades</p>
-                        <div class="arrow-link">Explorar <span class="text-yellow-500">→</span></div>
-                    </div>
-                </div>
-            </a>
+                </a>
 
-            <!-- 06 -->
-            <a href="fase6.html" class="phase-card fade-in-up delay-6">
-                <div class="phase-number">06</div>
-                <div class="card-content">
-                    <div class="icon-box">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <!-- 04 -->
+                <a href="fase4.html" class="phase-card fade-in-up delay-4">
+                    <div class="phase-number">04</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Pre-Producción</h3>
+                            <p class="phase-subtitle">Data Center</p>
+                            <div class="arrow-link">Gestionar <span class="text-yellow-500">→</span></div>
+                        </div>
                     </div>
-                    <div class="mt-auto">
-                        <h3 class="phase-title">Logística</h3>
-                        <p class="phase-subtitle">Centro de Despacho</p>
-                        <div class="arrow-link">Despachar <span class="text-yellow-500">→</span></div>
-                    </div>
-                </div>
-            </a>
+                </a>
 
-        </main>
+                <!-- 05 -->
+                <a href="fase5.html" class="phase-card fade-in-up delay-5">
+                    <div class="phase-number">05</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Marketplace</h3>
+                            <p class="phase-subtitle">Oportunidades</p>
+                            <div class="arrow-link">Explorar <span class="text-yellow-500">→</span></div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 06 -->
+                <a href="fase6.html" class="phase-card fade-in-up delay-6">
+                    <div class="phase-number">06</div>
+                    <div class="card-content">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </div>
+                        <div class="mt-auto">
+                            <h3 class="phase-title">Logística</h3>
+                            <p class="phase-subtitle">Centro de Despacho</p>
+                            <div class="arrow-link">Despachar <span class="text-yellow-500">→</span></div>
+                        </div>
+                    </div>
+                </a>
+
+            </main>
+        </div>
     </div>
 
-    <!-- JS: PARTICLES EFFECT (NODES) -->
+    <!-- JS: LOGIC & PARTICLES -->
     <script>
+        // --- LOGIN LOGIC ---
+        const CREDENTIALS = {
+            user: "QANTICA",
+            pass: "QW3"
+        };
+
+        function attemptLogin() {
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value.trim();
+            const loginBox = document.getElementById('loginBox');
+            const statusMsg = document.getElementById('status-msg');
+            const overlay = document.getElementById('login-overlay');
+            const mainSystem = document.getElementById('main-system');
+
+            // Simple client-side check
+            if (userIn === CREDENTIALS.user && passIn === CREDENTIALS.pass) {
+                // SUCCESS
+                statusMsg.style.color = "#22c55e";
+                statusMsg.innerText = "ACCESS GRANTED. INITIALIZING CORE...";
+                
+                // Unlock Animation
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    overlay.style.visibility = 'hidden';
+                    mainSystem.classList.add('system-unlocked');
+                    document.body.style.overflow = 'auto'; // Re-enable scroll
+                }, 800);
+
+            } else {
+                // FAILURE
+                statusMsg.innerText = "ACCESS DENIED: INVALID CREDENTIALS";
+                statusMsg.classList.add('error-text');
+                loginBox.classList.add('error-shake');
+                
+                // Remove shake class after animation so it can be triggered again
+                setTimeout(() => {
+                    loginBox.classList.remove('error-shake');
+                    statusMsg.classList.remove('error-text');
+                    statusMsg.innerText = "WAITING FOR CREDENTIALS...";
+                }, 1000);
+            }
+        }
+
+        // Trigger login on Enter key
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+
+
+        // --- PARTICLES LOGIC ---
         const canvas = document.getElementById('constellation');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -365,17 +546,16 @@
             height = canvas.height = window.innerHeight;
             stars = [];
             
-            // Adjust density for mobile vs desktop
             const numStars = width < 768 ? 40 : 90;
             
             for (let i = 0; i < numStars; i++) {
                 stars.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.2, // Slower movement
+                    vx: (Math.random() - 0.5) * 0.2, 
                     vy: (Math.random() - 0.5) * 0.2,
                     radius: Math.random() * 1.5 + 0.5,
-                    alpha: Math.random() * 0.5 + 0.2 // Variable opacity
+                    alpha: Math.random() * 0.5 + 0.2 
                 });
             }
         }
@@ -383,18 +563,15 @@
         function animate() {
             ctx.clearRect(0, 0, width, height);
             
-            // Draw lines connecting close particles
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
             ctx.lineWidth = 1;
             
-            // Optimization: limit line checks on mobile could be added here if needed, but current count is low
             for (let i = 0; i < stars.length; i++) {
                 for (let j = i + 1; j < stars.length; j++) {
                     const dx = stars[i].x - stars[j].x;
                     const dy = stars[i].y - stars[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     
-                    // Connection distance
                     if (dist < 120) {
                         ctx.beginPath();
                         ctx.moveTo(stars[i].x, stars[i].y);
@@ -404,18 +581,16 @@
                 }
             }
 
-            // Draw and move stars
             stars.forEach(star => {
                 star.x += star.vx;
                 star.y += star.vy;
 
-                // Bounce off edges (keep them in frame)
                 if (star.x < 0 || star.x > width) star.vx *= -1;
                 if (star.y < 0 || star.y > height) star.vy *= -1;
 
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(250, 204, 21, ${star.alpha})`; // Gold particles
+                ctx.fillStyle = `rgba(250, 204, 21, ${star.alpha})`; 
                 ctx.fill();
             });
 
