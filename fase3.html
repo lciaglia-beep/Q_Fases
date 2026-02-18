@@ -22,7 +22,6 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             overflow-x: hidden;
-            /* Dot pattern background */
             background-image: 
                 radial-gradient(circle at 2px 2px, rgba(250, 204, 21, 0.05) 1px, transparent 0);
             background-size: 24px 24px;
@@ -52,7 +51,7 @@
             border: 1px solid var(--border-light);
             position: relative;
             transition: transform 0.3s ease, border-color 0.3s ease;
-            padding: 2px; /* For HUD corners offset */
+            padding: 2px;
         }
         
         .card-inner {
@@ -74,7 +73,6 @@
 
         .mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* Animation: Scanning / Glitch */
         .glitch-text {
             position: relative;
             animation: glitch 4s infinite alternate;
@@ -85,7 +83,6 @@
             100% { opacity: 0.8; text-shadow: 4px 0 rgba(255,0,0,0.5), -4px 0 rgba(0,0,255,0.5); }
         }
 
-        /* Funnel Progress Line */
         .funnel-line {
             height: 2px;
             background: linear-gradient(90deg, var(--accent-yellow) 0%, transparent 100%);
@@ -98,7 +95,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            max-width: 1400px; /* Slightly wider to accommodate team list */
+            max-width: 1400px;
             margin: 0 auto;
             width: 100%;
         }
@@ -108,8 +105,8 @@
                 grid-template-columns: repeat(12, 1fr);
                 gap: 24px;
             }
-            .col-span-4 { grid-column: span 5; } /* Made wider for Puzzle Brothers content */
-            .col-span-8 { grid-column: span 7; }
+            .col-span-4 { grid-column: span 4; } 
+            .col-span-8 { grid-column: span 8; }
             .col-span-12 { grid-column: span 12; }
         }
 
@@ -120,13 +117,6 @@
         }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-        /* Custom Scrollbar for inner content if needed */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Video Hover Container */
         .video-container {
             position: relative;
             overflow: hidden;
@@ -153,7 +143,6 @@
             opacity: 0;
         }
 
-        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -204,6 +193,40 @@
             color: var(--accent-yellow);
         }
         
+        .hierarchy-line {
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-yellow) 0%, rgba(255,255,255,0.1) 100%);
+            position: absolute;
+            left: 50%;
+            top: -24px;
+            height: 24px;
+            z-index: 0;
+        }
+
+        /* Estilos para la lista de Squad Core */
+        .territory-line {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 2px;
+            border-radius: 2px;
+        }
+        .role-item {
+            position: relative;
+            padding-left: 12px;
+        }
+        .role-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+        
     </style>
 </head>
 <body class="min-h-screen flex flex-col pt-10 px-4 md:px-6 pb-20">
@@ -242,88 +265,172 @@
 
     <main class="grid-funnel">
 
-        <!-- Left Column: PUZZLE BROTHERS (Team & Video) -->
-        <div class="premium-card col-span-12 lg:col-span-4 fade-in" style="animation-delay: 0.1s;">
-            <div class="hud-corner top-left"></div>
-            <div class="hud-corner top-right"></div>
-            <div class="hud-corner bottom-left"></div>
-            <div class="hud-corner bottom-right"></div>
+        <!-- LEFT COLUMN: TEAM STACK -->
+        <div class="col-span-12 lg:col-span-4 flex flex-col gap-6 fade-in" style="animation-delay: 0.1s;">
             
-            <div class="card-inner flex flex-col h-full">
-                <!-- Header Title -->
-                <div class="mb-6 flex justify-between items-end border-b border-white/10 pb-4">
-                    <div>
-                        <span class="text-[10px] text-yellow-500 mono uppercase tracking-tighter">Unidad de Desarrollo</span>
-                        <h2 class="text-2xl md:text-3xl font-bold text-white mt-1 italic">PUZZLE BROTHERS</h2>
+            <!-- 1. SENIOR MANAGEMENT (Top Tier) - GAMING SPECIFIC -->
+            <div class="premium-card relative z-20">
+                <div class="hud-corner top-left"></div>
+                <div class="hud-corner top-right"></div>
+                
+                <div class="card-inner py-6 px-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                        <div>
+                            <span class="text-[10px] text-yellow-500 mono uppercase tracking-widest">Nivel Ejecutivo</span>
+                            <h2 class="text-lg font-bold text-white uppercase tracking-tight">Qantica Gaming Board</h2>
+                        </div>
+                        <div class="text-yellow-500">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
                     </div>
-                    <div class="w-8 h-8 rounded bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
-                    </div>
-                </div>
 
-                <!-- Explanation Text -->
-                <div class="mb-6">
-                    <p class="text-xs text-gray-400 leading-relaxed text-justify">
-                        Grupo de desarrolladores especializados que colaboran directamente con el creador para concebir un <span class="text-white font-medium">videojuego único</span>. Su objetivo es traducir la narrativa en mecánicas jugables para maximizar la rentabilidad y expansión de la IP.
+                    <p class="text-[11px] text-gray-400 mb-4 leading-tight">
+                        Supervisión estratégica vertical. Define roadmap de franquicias y asigna presupuestos de desarrollo.
                     </p>
-                </div>
 
-                <!-- Video Preview (Hover/Click Logic) -->
-                <div class="mb-6">
-                    <div class="video-container aspect-video group cursor-pointer" id="videoWrapper">
-                        <!-- Preview Loop (Muted) -->
-                        <video id="previewVideo" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" muted loop playsinline preload="metadata">
-                            <source src="video1.mp4" type="video/mp4">
-                        </video>
-                        
-                        <!-- Overlay Icon -->
-                        <div class="video-overlay flex-col gap-2">
-                            <div class="w-12 h-12 rounded-full bg-yellow-500/20 border border-yellow-500 text-yellow-500 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
-                                <svg class="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                    <!-- Senior Roles (Game Specific) -->
+                    <div class="space-y-3">
+                        <!-- Head 1 -->
+                        <div class="flex items-center gap-3 bg-white/5 p-2 rounded border border-white/5">
+                            <div class="w-8 h-8 rounded bg-gradient-to-br from-indigo-600 to-indigo-900 flex items-center justify-center text-[10px] font-bold text-white border border-indigo-500/50">CGO</div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-white">Chief Gaming Officer</span>
+                                <span class="text-[9px] text-gray-500 uppercase">Estrategia Global & Monetización</span>
                             </div>
-                            <span class="mono text-[10px] text-white tracking-widest mt-2 bg-black/50 px-2 py-1 rounded border border-white/10">VER DEMO</span>
+                        </div>
+                        <!-- Head 2 -->
+                        <div class="flex items-center gap-3 bg-white/5 p-2 rounded border border-white/5">
+                            <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-[10px] font-bold text-white border border-gray-600">VPP</div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-white">VP of Game Production</span>
+                                <span class="text-[9px] text-gray-500 uppercase">Supervisión de Estudios & Calidad</span>
+                            </div>
+                        </div>
+                        <!-- Head 3 -->
+                        <div class="flex items-center gap-3 bg-white/5 p-2 rounded border border-white/5">
+                            <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-[10px] font-bold text-white border border-gray-600">LGA</div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-white">Lead Game Architect</span>
+                                <span class="text-[9px] text-gray-500 uppercase">Motores, R&D & Infraestructura</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Team Roles List -->
-                <div class="space-y-3 mt-auto bg-black/20 p-4 rounded border border-white/5">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase mono mb-3">Squad Core</h3>
-                    
-                    <div class="grid gap-3">
-                        <!-- Role 1 -->
-                        <div class="flex flex-col border-l-2 border-yellow-500/50 pl-3">
-                            <span class="text-xs font-bold text-white">Director de Juego (GD)</span>
-                            <span class="text-[10px] text-gray-500">Define la visión y decide si hay videojuego.</span>
+            <!-- 2. DEVELOPMENT ECOSYSTEM (3 AREAS) -->
+            <div class="premium-card flex-grow relative z-10">
+                <!-- Visual Connector Line -->
+                <div class="hierarchy-line"></div>
+
+                <div class="hud-corner bottom-left"></div>
+                <div class="hud-corner bottom-right"></div>
+                
+                <div class="card-inner flex flex-col h-full pt-8">
+                    <!-- Header -->
+                    <div class="mb-4 border-b border-white/10 pb-2">
+                        <span class="text-[10px] text-blue-400 mono uppercase tracking-tighter">Ecosistema de Desarrollo</span>
+                        <h2 class="text-xl font-bold text-white mt-1">Dev Units</h2>
+                    </div>
+
+                    <!-- AREA 1: PUZZLE BROTHERS (Active) -->
+                    <div class="mb-4 bg-blue-900/10 border border-blue-500/30 rounded p-4 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 px-2 py-0.5 bg-blue-500 text-[9px] text-white font-bold mono rounded-bl">ASSIGNED</div>
+                        
+                        <div class="flex justify-between items-center mb-3 relative z-10">
+                            <h3 class="text-sm font-bold text-white italic tracking-wide">PUZZLE BROTHERS</h3>
                         </div>
-                        <!-- Role 2 -->
-                        <div class="flex flex-col border-l-2 border-gray-700 pl-3 hover:border-yellow-500/50 transition-colors">
-                            <span class="text-xs font-bold text-white">Diseñador de Juego</span>
-                            <span class="text-[10px] text-gray-500">Traduce la obra en mecánicas y gameplay.</span>
+
+                        <!-- Video Preview Expanded (ASPECT VIDEO) -->
+                        <div class="video-container aspect-video w-full mb-4 rounded-sm border-blue-500/20 cursor-pointer shadow-lg" id="videoWrapper">
+                            <video id="previewVideo" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" muted loop playsinline preload="metadata">
+                                <source src="video1.mp4" type="video/mp4">
+                            </video>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500 flex items-center justify-center backdrop-blur-sm hover:bg-blue-500/40 transition-colors">
+                                    <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                                </div>
+                            </div>
                         </div>
-                        <!-- Role 3 -->
-                        <div class="flex flex-col border-l-2 border-gray-700 pl-3 hover:border-yellow-500/50 transition-colors">
-                            <span class="text-xs font-bold text-white">Director Técnico</span>
-                            <span class="text-[10px] text-gray-500">Evalúa si es técnicamente viable.</span>
-                        </div>
-                        <!-- Role 4 -->
-                        <div class="flex flex-col border-l-2 border-gray-700 pl-3 hover:border-yellow-500/50 transition-colors">
-                            <span class="text-xs font-bold text-white">Productor de Videojuego</span>
-                            <span class="text-[10px] text-gray-500">Valora viabilidad, coste y estrategia.</span>
-                        </div>
-                        <!-- Role 5 -->
-                        <div class="flex flex-col border-l-2 border-gray-700 pl-3 hover:border-yellow-500/50 transition-colors">
-                            <span class="text-xs font-bold text-white">Diseñador Narrativo</span>
-                            <span class="text-[10px] text-gray-500">Convierte historia en experiencia jugable.</span>
-                        </div>
-                        <!-- Role 6 -->
-                        <div class="flex flex-col border-l-2 border-gray-700 pl-3 hover:border-yellow-500/50 transition-colors">
-                            <span class="text-xs font-bold text-white">Analista de IP / Mercado</span>
-                            <span class="text-[10px] text-gray-500">Evalúa potencial comercial y encaje.</span>
+
+                        <!-- SQUAD CORE SECTION -->
+                        <div class="bg-black/20 rounded border border-white/5 p-3">
+                            <div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2">
+                                <svg class="w-3 h-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                <span class="text-[10px] text-yellow-500 font-bold mono uppercase tracking-widest">Squad Core & Territories</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4">
+                                <!-- TERRITORY 1: VISION & NEGOCIO -->
+                                <div class="relative pl-3">
+                                    <div class="territory-line bg-indigo-500/50"></div>
+                                    <h4 class="text-[9px] text-indigo-400 uppercase font-bold mb-2 tracking-wider">Territorio: Visión & Estrategia</h4>
+                                    
+                                    <div class="space-y-2.5">
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Director de Juego (GD)</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Define la visión y decide si hay videojuego.</div>
+                                        </div>
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Productor de Videojuego</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Valora viabilidad, coste y estrategia.</div>
+                                        </div>
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Analista de IP / Mercado</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Evalúa potencial comercial y encaje.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- TERRITORY 2: PRODUCCIÓN & TÉCNICA -->
+                                <div class="relative pl-3">
+                                    <div class="territory-line bg-green-500/50"></div>
+                                    <h4 class="text-[9px] text-green-400 uppercase font-bold mb-2 tracking-wider">Territorio: Ejecución & Arte</h4>
+                                    
+                                    <div class="space-y-2.5">
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Diseñador de Juego</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Traduce la obra en mecánicas y gameplay.</div>
+                                        </div>
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Director Técnico</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Evalúa si es técnicamente viable.</div>
+                                        </div>
+                                        <div class="role-item">
+                                            <div class="text-[10px] font-bold text-white">Diseñador Narrativo</div>
+                                            <div class="text-[9px] text-gray-500 leading-tight">Convierte historia en experiencia jugable.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                    <!-- AREA 2: POSSIBLE DEV A (Placeholder) -->
+                    <div class="mb-2 bg-white/5 border border-white/5 rounded p-3 flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity border-dashed">
+                        <div>
+                            <div class="text-[10px] text-gray-500 mono uppercase">Posible Partner A</div>
+                            <div class="text-sm font-bold text-gray-300">Shadow Studio</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                            <span class="text-[9px] text-yellow-500 mono">EVALUANDO</span>
+                        </div>
+                    </div>
+
+                    <!-- AREA 3: POSSIBLE DEV B (Placeholder) -->
+                    <div class="bg-white/5 border border-white/5 rounded p-3 flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity border-dashed">
+                        <div>
+                            <div class="text-[10px] text-gray-500 mono uppercase">Posible Partner B</div>
+                            <div class="text-sm font-bold text-gray-300">Neon Forge</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                            <span class="text-[9px] text-yellow-500 mono">EVALUANDO</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
 
